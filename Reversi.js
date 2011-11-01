@@ -45,7 +45,7 @@ Field.prototype.getColor = function(){
 };
 
 var colorsEnum = {black:1, white:2};
-Object.freeze(colorsEnum)
+Object.freeze(colorsEnum);
 
 //---------------------------------------------------------
 // Player's functions
