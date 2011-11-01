@@ -134,7 +134,7 @@ function convertInput(move){
 	return coords;
 }
 
-function chracterFromElement(element){
+function characterFromElement(element){
 	if(element.color == undefined)
 		return '_';
 	else if (element.color == black)
