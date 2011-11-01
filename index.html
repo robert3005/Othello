@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="raphael-min.js"></script>
+		<script type="text/javascript">
+			Raphael("othello", 300, 300, function() {
+				var r = this;	
+				r.rect(50, 50, 200, 200).attr({fill: "#000", stroke: "#f00"});
+				r.rect(60, 60, 10, 10).attr({fill: "#fff"});
+				//r.circle(316, 248, 5).attr({stroke: "none", fill: "#000"});	   
+			});
+		</script>
+		<title>Raphael Othello</title>
+	</head>
+	<body>
+		<div id="othello">
+		</div>
+	</body>
+</html>
