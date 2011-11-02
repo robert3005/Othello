@@ -3,12 +3,59 @@
 	<head>
 		<script type="text/javascript" src="raphael-min.js"></script>
 		<script type="text/javascript">
-			Raphael("othello", 300, 300, function() {
-				var r = this;	
-				r.rect(50, 50, 200, 200).attr({fill: "#000", stroke: "#f00"});
-				r.rect(60, 60, 10, 10).attr({fill: "#fff"});
-				//r.circle(316, 248, 5).attr({stroke: "none", fill: "#000"});	   
-			});
+		(function () {
+		    "use strict";
+		    var size = 8;
+		    var cellsize = 64;
+		    var baseOffset = 100;
+		    var gridsize = size * cellsize + 2 * baseOffset;
+		    var Field = function (xcord, ycord, row, column, r) {
+		            var field = r.rect(xcord, ycord, cellsize, cellsize).attr({
+		                fill: "#333333",
+		                stroke: "#422faa"
+		            });
+		            var circlefield = r.circle(xcord + cellsize / 2, ycord + cellsize / 2, 20).attr({
+		                fill: "#9d9d9d",
+		                stroke: "#000",
+		                opacity: 0
+		            }).data("in", false).toFront();
+		            var hoverField = r.rect(xcord, ycord, cellsize, cellsize).data("row", row).data("column", column).attr({
+		                fill: "#333333",
+		                stroke: "#422faa",
+		                opacity: 0
+		            }).hover(function () {
+		                this.animate({
+		                    opacity: 1
+		                }, 200, "backOut");
+		            }, function () {
+		                this.animate({
+		                    opacity: 0
+		                }, 200, "backOut");
+		            }, circlefield, circlefield);
+		        };
+		    var Raph = new Raphael("othello", gridsize, gridsize, function () {
+		        var r = this;
+		        var header = r.text(356, 50, "White play").attr({
+		            font: "bold 40px Helvetica",
+		            fill: "#9872fa"
+		        });
+		        var leftPlayer = r.text(40, 130, "White\n Scores").attr({
+		            font: "bold 14px Helvetica",
+		            fill: "#fa1247"
+		        });
+		        var rightPlayer = r.text(672, 130, "Black\n Scores").attr({
+		            font: "bold 14px Helvetica",
+		            fill: "#fa1247"
+		        });
+		        for (var i = 0; i < size * size; ++i) {
+		            var row = Math.floor(i / 8);
+		            var column = i % size;
+		            var xcord = baseOffset + row * (cellsize + 1);
+		            var ycord = baseOffset + column * (cellsize + 1);
+		            new Field(xcord, ycord, row, column, r);
+		        }
+		    });
+		})();
 		</script>
 		<title>Raphael Othello</title>
 	</head>
