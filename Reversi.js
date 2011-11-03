@@ -28,8 +28,8 @@ var Grid = function(size){
 			}
 		},
 
-		addTo: function(fieldX, fieldY, coords){
-			return [fieldY + coords[1], fieldX + coords[0]];
+		addTo: function(state, value){
+			return [state[0] + value[0], state[1] + value[1]];
 		};
 };
 //---------------------------------------------------------
@@ -79,7 +79,8 @@ var Game = function(size){
 	play: function(){
 		var i = 0;
 		while(!isGameFinished()){
-			this.makeMove(grid,players[i]);
+			currentPlayer = players[i];
+			this.makeMove(grid);
 			//alert(this.toString);
 			//alert(this.printScore);
 			i = (i+1)%2;
@@ -108,79 +109,54 @@ var Game = function(size){
 		return characters.join("");
 	},
 
-	makeMove: function(grid, player){
+	makeMove: function(grid){
 		var move = "";//prompt("What's your next move, busy lady?(type in the coordinates in format 'width height' ", "");
 		var coords = convertInput(move);
-		checkIfLegal(coords, grid, player);
+		getLegalMoves();
 		updateGrid(coords, grid);
 	},
 
-	getLegalMoves: function(coords, player){
+	getLegalMoves: function(){
 		var legalMoves = [],tilesToChange = [], localColor, state = [];
 	
 		var advance = function(){
-			state = grid.addTo(x,y, value);
-			localColor = grid.getFieldAt(x,y).getColor;
+			state = grid.addTo(state, value);
+			localColor = grid.getFieldAt(state[0], state[1]).getColor;
 		};
 
-		grid.each(forEachIn(directions, function(direction, value) = {
-			advance();
-			if(localColor!=player.getColor && localColor != colorsEnum.empty){
+		grid.each(function(x, y){
+			directions.each(function(direction, value){
+				state = [x, y];
 				advance();
-				while(localColor != player.getColor && state[0]<grid.size && state[1]<grid.size){
-					if(localColor == player.getColor){
-						legalMoves.push([coords[0],coords[1],tilesToChange]);
-					}
-					if(localColor != colorsEnum.empty){
-						tilesToChange.push([state[0],state[1]]);
-					}
-					if(localColor == colorsEnum.empty){
-						break;
-					}
+				if(localColor != currentPlayer.getColor && localColor != colorsEnum.empty){
 					advance();
+					while(localColor != currentPlayer.getColor && state[0]<grid.size && state[1]<grid.size){
+						if(localColor == currentPlayer.getColor){
+							legalMoves.push(x, y, tilesToChange]);
+						}
+						if(localColor != colorsEnum.empty){
+							tilesToChange.push(state);
+						}
+						if(localColor == colorsEnum.empty){
+							break;
+						}
+						advance();
+					}
 				}
-				tilesToChange.clear;
-			}
-		}));
+			});
+			tilesToChange.clear;
+		});
 		return legalMoves;
+	},
+
+	function updateGrid(coords, grid){
+		
 	};
 
 };
 
 //---------------------------------------------------------
 // Other functions (maybe prototype methods)
-
-function getLegalMoves(coords, grid, player){
-	var x = coords[0], y = coords[1], legalMoves = [],tilesToChange = [], localColor, state = [];
-	
-	var advance = function(){
-			state = grid.addTo(x,y, value);
-			localColor = grid.getFieldAt(x,y).getColor;
-	};
-
-	grid.each(forEachIn(directions, function(direction, value) = {
-			advance();
-			if(localColor!=player.getColor && localColor != colorsEnum.empty){
-				advance();
-				while(localColor != player.getColor && state[0]<grid.size && state[1]<grid.size){
-					if(localColor == player.getColor){
-						legalMoves.push([coords[0],coords[1],tilesToChange]);
-					}
-					if(localColor != colorsEnum.empty){
-						tilesToChange.push([state[0],state[1]]);
-					}
-					if(localColor == colorsEnum.empty){
-						break;
-					}
-					advance();
-				}
-				tilesToChange.clear;
-			}
-	}));
-	return legalMoves;
-}
-
-
 
 var directions = new Dictionary(
 	{"n": [0, -1],
@@ -191,13 +167,6 @@ var directions = new Dictionary(
 	"sw": [-1, 1],
 	"w": [-1, 0],
 	"nw": [-1, -1]});
-
-
-function updateGrid(coords, grid){
-	
-}
-
-
 
 function convertInput(move){
 	var coords = [];
