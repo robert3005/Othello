@@ -100,6 +100,9 @@ var Player = function (id, color) {
         this.color = color;
         this.score = 0;
         this.legalMoves = [];
+        this.getColor = function(){
+            return this.color;  
+        };
     };
 
 ///////////////////////////////////////////////////////////
@@ -110,6 +113,7 @@ var Game = function (size) {
         this.grid = new Grid(size);
         this.pass = false; // in the beginning no player could pass
         this.currentPlayer = {};
+        this.otherPlayer = {};
 
         this.initialise = function () {
             var middleField = this.grid.size / 2;
@@ -122,6 +126,7 @@ var Game = function (size) {
         this.play = function () {
             var i = 0;
             var changePlayer = function () {
+                    this.otherPlayer = this.currentPlayer; 
                     this.currentPlayer = this.players[i];
                     this.currentPlayer.legalMoves = this.getLegalMoves();
                 };
@@ -129,6 +134,7 @@ var Game = function (size) {
             this.initialise();
             this.players.push(new Player(1, MY.colorsEnum.white));
             this.players.push(new Player(2, MY.colorsEnum.black));
+            this.currentPlayer = this.players[1];
             changePlayer();
             while (!this.isGameFinished()) {
                 if (!this.pass) {
@@ -180,7 +186,7 @@ var Game = function (size) {
                 if (this.grid.getFieldAt(x, y).getColor === MY.colorsEnum.empty) {
                     this.directions.each(function (direction, value) {
                         advance(value);
-                        while (!outOfBounds && localColor !== this.currentPlayer.getColor && localColor !== MY.colorsEnum.empty) {
+                        while (!outOfBounds && localColor === this.otherPlayer.getColor()) {
                             tempTiles.push(state);
                             advance(value);
                         }
@@ -200,11 +206,13 @@ var Game = function (size) {
 
         this.updateGrid = function (coords) {
             var tilesToChange = this.currentPlayer.legalMoves.lookup([coords[0], coords[1]]),
-                fieldToChange;
-            this.currentPlayer.score += tilesToChange.size;
+                fieldToChange, scoreDiff = tilesToChange.size;
+            this.currentPlayer.score += (scoreDiff + 1);
+            this.otherPlayer.score -= scoreDiff;
+            this.grid.getFieldAt(coords[0], coords[1]).setColor(this.currentPlayer.getColor());
             for (var i = 0; i < tilesToChange.size; ++i) {
                 fieldToChange = tilesToChange[i];
-                this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(this.currentPlayer.getColor);
+                this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(this.currentPlayer.getColor());
             }
         };
 
