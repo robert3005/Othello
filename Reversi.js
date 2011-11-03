@@ -98,8 +98,10 @@ var Game = function(size){
 	isGameFinished: function(){
     if(this.currentPlayer.legalMoves === [] && this.pass) return true; // if the currPlayer can't move and the prevPlayer passed then we finish the game
     if(this.currentPlayer.legalMoves === []){ // if the current player can't move then he must pass and we have to check whether the second player can move
-      this.pass = true;                       // if the second player can't move neither then we change the value of pass to true and the game is finished (return true)
-      return false;
+      this.pass = true;
+    }                       // if the second player can't move neither then we change the value of pass to true and the game is finished (return true)
+    else{
+      this.pass = false;
     }
     return false;
   }
