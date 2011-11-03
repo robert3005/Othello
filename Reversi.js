@@ -91,7 +91,7 @@ var Game = function(size){
   isGameFinished: function(){
 	  if(this.currentPlayer.legalMoves === []){   // === compares types and values
        if(this.pass == false) return true;
-       else return false;
+       return false;
     }
     return true;
   },
