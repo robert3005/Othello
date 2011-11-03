@@ -83,13 +83,15 @@ var Game = function(size){
 
 	play: function(){
 		var i = 0;
+		this.currentPlayer = players[i];
+		this.currentPlayer.legalMoves = getLegalMoves();
 		while(!isGameFinished()){
+			if(!this.pass){
+				this.makeMove();
+			}
+			i = (i+1)%2;
 			this.currentPlayer = players[i];
 			this.currentPlayer.legalMoves = getLegalMoves();
-			this.makeMove();
-			//alert(this.toString);
-			//alert(this.printScore);
-			i = (i+1)%2;
 		}
 	//alert("Game is over./n")
 	//alert(this.printScore);
@@ -104,9 +106,8 @@ var Game = function(size){
       this.pass = false;
     }
     return false;
-  }
-	  //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
   },
+	  //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
 
 	makeMove: function(){
 		var coords = [0,0];  // read Coords here
