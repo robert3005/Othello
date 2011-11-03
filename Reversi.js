@@ -66,8 +66,8 @@ var Player = function(id, color){
 var Game = function(size){
 	this.players = [];
 	this.grid = new Grid(size);
-  this.pass = false;  
-  this.currentPlayer = {};
+  	this.pass = false;  
+  	this.currentPlayer = {};
 	
 	initialise: function(size){
 		this.grid.getFieldAt(grid.width/2, grid.height/2).setColor(colorsEnum.white);
@@ -93,13 +93,9 @@ var Game = function(size){
 		") and player 2 (" + players[1].score + "/n";
 	},
 
-  isGameFinished: function(){
-	  if(this.currentPlayer.legalMoves === []){   // === compares types and values
-       if(this.pass == false) return true;
-       return false;
-    }
-    return true;
-  },
+	isGameFinished: function(){
+	  	return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
+  	},
 
 	toString: function() {
 		var characters = [];
@@ -117,13 +113,44 @@ var Game = function(size){
 		var coords = convertInput(move);
 		checkIfLegal(coords, grid, player);
 		updateGrid(coords, grid);
+	},
+
+	getLegalMoves: function(coords, player){
+		var legalMoves = [],tilesToChange = [], localColor, state = [];
+	
+		var advance = function(){
+			state = grid.addTo(x,y, value);
+			localColor = grid.getFieldAt(x,y).getColor;
+		};
+
+		grid.each(forEachIn(directions, function(direction, value) = {
+			advance();
+			if(localColor!=player.getColor && localColor != colorsEnum.empty){
+				advance();
+				while(localColor != player.getColor && state[0]<grid.size && state[1]<grid.size){
+					if(localColor == player.getColor){
+						legalMoves.push([coords[0],coords[1],tilesToChange]);
+					}
+					if(localColor != colorsEnum.empty){
+						tilesToChange.push([state[0],state[1]]);
+					}
+					if(localColor == colorsEnum.empty){
+						break;
+					}
+					advance();
+				}
+				tilesToChange.clear;
+			}
+		}));
+		return legalMoves;
 	};
+
 };
 
 //---------------------------------------------------------
 // Other functions (maybe prototype methods)
 
-function checkIfLegal(coords, grid, player){
+function getLegalMoves(coords, grid, player){
 	var x = coords[0], y = coords[1], legalMoves = [],tilesToChange = [], localColor, state = [];
 	
 	var advance = function(){
