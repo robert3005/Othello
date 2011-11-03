@@ -124,26 +124,36 @@ var Game = function(size){
 // Other functions (maybe prototype methods)
 
 function checkIfLegal(coords, grid, player){
-	var x = coords[0], y = coords[1];
-	var legalMoves = [];
-	var tilesToChange = [];
-	grid.each(function = {
-			x = grid.addTo(x,y, directions["n"])[0];
-			y = grid.addTo(x,y, directions["n"])[1];
-			var localColor = grid.getFieldAt(x,y).getColor;
+	var x = coords[0], y = coords[1], legalMoves = [],tilesToChange = [], localColor, state = [];
+	
+	var advance = function(){
+			state = grid.addTo(x,y, value);
+			localColor = grid.getFieldAt(x,y).getColor;
+	};
+
+	grid.each(forEachIn(directions, function(direction, value) = {
+			advance();
 			if(localColor!=player.getColor && localColor != colorsEnum.empty){
-				while(localColor != player.getColor){
+				advance();
+				while(localColor != player.getColor && state[0]<grid.size && state[1]<grid.size){
 					if(localColor == player.getColor){
-						break;
+						legalMoves.push([coords[0],coords[1],tilesToChange]);
 					}
 					if(localColor != colorsEnum.empty){
-						tilesToChange.push([x,y]);
+						tilesToChange.push([state[0],state[1]]);
 					}
+					if(localColor == colorsEnum.empty){
+						break;
+					}
+					advance();
 				}
+				tilesToChange.clear;
 			}
-	});
-
+	}));
+	return legalMoves;
 }
+
+
 
 var directions = new Dictionary(
 	{"n": [0, -1],
