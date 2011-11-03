@@ -117,31 +117,27 @@ var Game = function(size){
 	},
 
 	getLegalMoves: function(){
-		var legalMoves = [],tilesToChange = [], localColor, state = [];
+		var legalMoves = [],tilesToChange = [], localColor, state = [], outOutBounds = false;
 	
 		var advance = function(){
 			state = grid.addTo(state, value);
-			localColor = grid.getFieldAt(state[0], state[1]).getColor;
+			if(state[0] == grid.size || state[1] == grid.size){
+				outOfBounds = true;
+			} else {
+				localColor = grid.getFieldAt(state[0], state[1]).getColor;
+			}
 		};
 
 		grid.each(function(x, y){
 			directions.each(function(direction, value){
 				state = [x, y];
 				advance();
-				if(localColor != currentPlayer.getColor && localColor != colorsEnum.empty){
+				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty && state[0]<grid.size && state[1]<grid.size){
+					tilesToChange.push(state);
 					advance();
-					while(localColor != currentPlayer.getColor && state[0]<grid.size && state[1]<grid.size){
-						if(localColor == currentPlayer.getColor){
-							legalMoves.push(x, y, tilesToChange]);
-						}
-						if(localColor != colorsEnum.empty){
-							tilesToChange.push(state);
-						}
-						if(localColor == colorsEnum.empty){
-							break;
-						}
-						advance();
-					}
+				}
+				if(!outOfBounds && localColor == currentPlayer.getColor){
+					legalMoves.push([x, y, tilesToChange]);
 				}
 			});
 			tilesToChange.clear;
