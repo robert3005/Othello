@@ -117,7 +117,7 @@ var Game = function(size){
 	},
 
 	getLegalMoves: function(){
-		var legalMoves = [],tilesToChange = [], localColor, state = [], outOutBounds = false;
+		var legalMoves = [],tilesToChange = [], tempTiles = [], localColor, state = [], outOutBounds = false;
 	
 		var advance = function(){
 			state = grid.addTo(state, value);
@@ -128,18 +128,19 @@ var Game = function(size){
 			}
 		};
 
-		grid.each(function(x, y){
-			directions.each(function(direction, value){
-				state = [x, y];
-				advance();
-				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty && state[0]<grid.size && state[1]<grid.size){
-					tilesToChange.push(state);
-					advance();
+		grid.each(function(x, y){  // function is called for every field on the board
+			state = [x, y]; // state of the field which is currenly computed
+			directions.each(function(direction, value){ // function is called in all directions
+				advance(); // i move forward  one step in current direction
+				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty){ // loop works until a field is in wrong color or index is outofbounds
+					tilesToChange.push(state); // add every faced field to the array
+					advance(); // and move to the next field
 				}
-				if(!outOfBounds && localColor == currentPlayer.getColor){
-					legalMoves.push([x, y, tilesToChange]);
+				if(outOfBounds && localColor == colorsEnum.empty){
+					tilesToChange.clear;
 				}
 			});
+			legalMoves.push([x, y, tilesToChange]);
 			tilesToChange.clear;
 		});
 		return legalMoves;
