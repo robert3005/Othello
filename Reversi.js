@@ -57,6 +57,7 @@ var Player = function(id, color){
 	this.id = id;
 	this.color = color;
 	this.score = 0;
+  this.legalMoves = [];
 };
 
 //---------------------------------------------------------
@@ -65,6 +66,8 @@ var Player = function(id, color){
 var Game = function(size){
 	this.players = [];
 	this.grid = new Grid(size);
+  this.pass = false;  
+  this.currentPlayer = {};
 	
 	initialise: function(size){
 		this.grid.getFieldAt(grid.width/2, grid.height/2).setColor(colorsEnum.white);
@@ -90,6 +93,14 @@ var Game = function(size){
 		") and player 2 (" + players[1].score + "/n";
 	},
 
+  isGameFinished: function(){
+	  if(this.currentPlayer.legalMoves === []){   // === compares types and values
+       if(this.pass == false) return true;
+       return false;
+    }
+    return true;
+  },
+
 	toString: function() {
 		var characters = [];
 		var endOfLine = this.grid.width - 1;
@@ -99,7 +110,7 @@ var Game = function(size){
 				characters.push("\n");
 		});
 		return characters.join("");
-	};
+	},
 
 	makeMove: function(grid, player){
 		var move = "";//prompt("What's your next move, busy lady?(type in the coordinates in format 'width height' ", "");
@@ -149,9 +160,7 @@ function updateGrid(coords, grid){
 	
 }
 
-function isGameFinished(){
-	
-}
+
 
 function convertInput(move){
 	var coords = [];
