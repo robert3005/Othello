@@ -60,6 +60,7 @@ var Player = function(id, color){
 var Game = function(size){
 	this.players = [];
 	this.grid = new Grid(size);
+  this.pass = false;
 	
 	initialise: function(size){
 		this.grid.getFieldAt(grid.width/2, grid.height/2).setColor(colorsEnum.white);
