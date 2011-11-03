@@ -26,6 +26,10 @@ var Grid = function(size){
 					action(x, y, this.getFieldAt(x, y));
 				}
 			}
+		},
+
+		addTo: function(fieldX, fieldY, coords){
+			return [fieldY + coords[1], fieldX + coords[0]];
 		};
 };
 //---------------------------------------------------------
@@ -40,6 +44,7 @@ var Field = function(color){
 	getColor: function(){
 		return this.color;		
 	};
+
 };
 
 var colorsEnum = {black:1, white:2, empty:3};
@@ -71,7 +76,7 @@ var Game = function(size){
 	play: function(){
 		var i = 0;
 		while(!isGameFinished()){
-			this.players[i].makeMove();
+			this.makeMove(grid,players[i]);
 			//alert(this.toString);
 			//alert(this.printScore);
 			i = (i+1)%2;
@@ -96,10 +101,10 @@ var Game = function(size){
 		return characters.join("");
 	};
 
-	makeMove: function(grid){
+	makeMove: function(grid, player){
 		var move = "";//prompt("What's your next move, busy lady?(type in the coordinates in format 'width height' ", "");
 		var coords = convertInput(move);
-		checkIfLegal(coords, grid);
+		checkIfLegal(coords, grid, player);
 		updateGrid(coords, grid);
 	};
 };
@@ -107,13 +112,25 @@ var Game = function(size){
 //---------------------------------------------------------
 // Other functions (maybe prototype methods)
 
-function checkIfLegal(coords, grid){
-	if(grid.getFieldAt(coords[0], coords[1]).getColor!=null){
-		return false;
-	}
-	while(){
-		
-	}
+function checkIfLegal(coords, grid, player){
+	var x = coords[0], y = coords[1];
+	var legalMoves = [];
+	var tilesToChange = [];
+	grid.each(function = {
+			x = grid.addTo(x,y, directions["n"])[0];
+			y = grid.addTo(x,y, directions["n"])[1];
+			var localColor = grid.getFieldAt(x,y).getColor;
+			if(localColor!=player.getColor && localColor != colorsEnum.empty){
+				while(localColor != player.getColor){
+					if(localColor == player.getColor){
+						break;
+					}
+					if(localColor != colorsEnum.empty){
+						tilesToChange.push([x,y]);
+					}
+				}
+			}
+	});
 
 }
 
