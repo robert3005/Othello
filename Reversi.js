@@ -98,7 +98,7 @@ var Player = function (id, color) {
         "use strict";
         this.id = id;
         this.color = color;
-        this.score = 0;
+        this.score = 2;
         this.legalMoves = [];
         this.getColor = function(){
             return this.color;  
