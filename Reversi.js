@@ -70,7 +70,7 @@ var Player = function(id, color){
 var Game = function(size){
 	this.players = [];
 	this.grid = new Grid(size);
-  	this.pass = false;  
+  	this.pass = false;  // in the beginning no player could pass
   	this.currentPlayer = {};
 	
 	initialise: function(){
@@ -95,8 +95,8 @@ var Game = function(size){
 	},
 
 	isGameFinished: function(){
-	  	return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
-  	},
+	  return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
+  },
 
 	makeMove: function(){
 		var move = "", coords = [0,0], this.currentPlayer.legalMoves = getLegalMoves();
