@@ -84,7 +84,8 @@ var Game = function(size){
 	play: function(){
 		var i = 0;
 		while(!isGameFinished()){
-			currentPlayer = players[i];
+			this.currentPlayer = players[i];
+			this.currentPlayer.legalMoves = getLegalMoves();
 			this.makeMove();
 			//alert(this.toString);
 			//alert(this.printScore);
@@ -99,7 +100,7 @@ var Game = function(size){
   },
 
 	makeMove: function(){
-		var move = "", coords = [0,0], this.currentPlayer.legalMoves = getLegalMoves();
+		var coords = [0,0];  // read Coords here
 		updateGrid(coords);
 	},
 
