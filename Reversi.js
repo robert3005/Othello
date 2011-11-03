@@ -96,7 +96,13 @@ var Game = function(size){
 	},
 
 	isGameFinished: function(){
-	  return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
+    if(this.currentPlayer.legalMoves === [] && this.pass) return true;
+    if(this.currentPlayer.legalMoves === []){ // if the current player can't move then he must pass and we have to check whether the second player can move
+      this.pass = true;                       // if the second player can't move neither then we change the value of pass to true and the game is finished (return true)
+      return false;
+    }
+  }
+	  //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
   },
 
 	makeMove: function(){
