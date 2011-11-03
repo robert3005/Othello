@@ -1,5 +1,8 @@
-//---------------------------------------------------------
-// Grid's functions
+// One Global // dunno about it // 
+var MY = {};
+
+///////////////////////////////////////////////////////////
+// Grid's functions //
 var Grid = function(size){
 	this.size = size;
 	this.cells = [];
@@ -32,8 +35,9 @@ var Grid = function(size){
 			return [state[0] + value[0], state[1] + value[1]];
 		};
 };
-//---------------------------------------------------------
-// Field's functions
+
+///////////////////////////////////////////////////////////
+// Field's functions //
 var Field = function(color){
 	this.color = colorsEnum.empty;
 
@@ -47,11 +51,11 @@ var Field = function(color){
 
 };
 
-var colorsEnum = {black:1, white:2, empty:3};
-Object.freeze(colorsEnum);
+MY.colorsEnum = {black:1, white:2, empty:3};
+Object.freeze(MY.colorsEnum);
 
-//---------------------------------------------------------
-// Player's functions
+///////////////////////////////////////////////////////////
+// Player's functions //
 
 var Player = function(id, color){
 	this.id = id;
@@ -60,8 +64,8 @@ var Player = function(id, color){
 	this.legalMoves = [];
 };
 
-//---------------------------------------------------------
-// Game's functions
+///////////////////////////////////////////////////////////
+// Game's functions //
 
 var Game = function(size){
 	this.players = [];
@@ -69,18 +73,19 @@ var Game = function(size){
   	this.pass = false;  
   	this.currentPlayer = {};
 	
-	initialise: function(size){
-		this.grid.getFieldAt(grid.width/2, grid.height/2).setColor(colorsEnum.white);
-		this.grid.getFieldAt(grid.width/2+1, grid.height/2+1).setColor(colorsEnum.white);
-		this.grid.getFieldAt(grid.width/2+1, grid.height/2).setColor(colorsEnum.black);
-		this.grid.getFieldAt(grid.width/2, grid.height/2+1).setColor(colorsEnum.black);
+	initialise: function(){
+		var middleField = grid.size/2;
+		this.grid.getFieldAt(middleField, middleField).setColor(MY.colorsEnum.white);
+		this.grid.getFieldAt(middleField+1, middleField+1).setColor(MY.colorsEnum.white);
+		this.grid.getFieldAt(middleField+1, middleField).setColor(MY.colorsEnum.black);
+		this.grid.getFieldAt(middleField, middleField+1).setColor(MY.colorsEnum.black);
 	},
 
 	play: function(){
 		var i = 0;
 		while(!isGameFinished()){
 			currentPlayer = players[i];
-			this.makeMove(grid);
+			this.makeMove();
 			//alert(this.toString);
 			//alert(this.printScore);
 			i = (i+1)%2;
@@ -88,32 +93,14 @@ var Game = function(size){
 	//alert("Game is over./n")
 	//alert(this.printScore);
 	},
-	
-	printScore: function(){
-		return "The score is: player 1 (" + players[0].score + 
-		") and player 2 (" + players[1].score + "/n";
-	},
 
 	isGameFinished: function(){
 	  	return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
   	},
 
-	toString: function() {
-		var characters = [];
-		var endOfLine = this.grid.width - 1;
-		this.grid.each(function(x, y, value){
-			characters.push(characterFromElement(value));
-			if(x == endOfLine)
-				characters.push("\n");
-		});
-		return characters.join("");
-	},
-
-	makeMove: function(grid){
-		var move = "";//prompt("What's your next move, busy lady?(type in the coordinates in format 'width height' ", "");
-		var coords = convertInput(move);
-		var legalMoves = getLegalMoves();
-		updateGrid(coords, legalMoves);
+	makeMove: function(){
+		var move = "", coords = [0,0], this.currentPlayer.legalMoves = getLegalMoves();
+		updateGrid(coords);
 	},
 
 	getLegalMoves: function(){
@@ -130,64 +117,52 @@ var Game = function(size){
 
 		grid.each(function(x, y){
 			state = [x, y];
-			directions.each(function(direction, value){
-				advance();
-				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty){
-					tempTiles.push(state);
+			if(this.grid.getFieldAt(x, y).getColor == MY.colorsEnum.empty){
+				this.directions.each(function(direction, value){
 					advance();
+					while(!outOfBounds && localColor != currentPlayer.getColor && localColor != MY.colorsEnum.empty){
+						tempTiles.push(state);
+						advance();
+					}
+					if(outOfBounds && localColor == MY.colorsEnum.empty){
+						tempTiles.clear;
+					}
+					tilesToChange = tilesToChange.concat(tempTiles);
+				});
+				if(tilesToChange.size > 0){
+					legalMoves.store([x, y], tilesToChange);
 				}
-				if(outOfBounds && localColor == colorsEnum.empty){
-					tempTiles.clear;
-				}
-				tilesToChange = tilesToChange.concat(tempTiles);
-			});
-			if(tilesToChange.size > 0){
-				legalMoves.store([x, y], tilesToChange);
-			}
-			tilesToChange.clear;
+				tilesToChange.clear;
+			}	
 		});
 		return legalMoves;
 	},
 
-	updateGrid: function(coords, legalMoves){
-		var tilesToChange = legalMoves.lookup([coords[0], coords[1]]),
+	updateGrid: function(coords){
+		var tilesToChange = this.currentPlayer.legalMoves.lookup([coords[0], coords[1]]),
 			fieldToChange;
+		this.currentPlayer.score += tilesToChange.size;
 		for(var i = 0; i < tilesToChange.size; ++i){
 			fieldToChange = tilesToChange[i];
-			this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(currentPlayer.getColor);
+			this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(this.currentPlayer.getColor);
 		}
+	},
+
+	directions: function() {return new Dictionary(
+		{"n": [0, -1],
+		"ne": [1, -1],
+		"e":  [1, 0],
+		"se": [1, 1],
+		"s": [0, 1],
+		"sw": [-1, 1],
+		"w": [-1, 0],
+		"nw": [-1, -1]});
 	};
 
 };
 
-//---------------------------------------------------------
-// Other functions (maybe prototype methods)
-
-var directions = new Dictionary(
-	{"n": [0, -1],
-	"ne": [1, -1],
-	"e":  [1, 0],
-	"se": [1, 1],
-	"s": [0, 1],
-	"sw": [-1, 1],
-	"w": [-1, 0],
-	"nw": [-1, -1]});
-
-function convertInput(move){
-	var coords = [];
-	coords.push(move.charAt(0));
-	coords.push(move.charAt(2));
-	return coords;
-}
-
-function characterFromElement(element){
-	if(element.color == undefined)
-		return '_';
-	else if (element.color == black)
-		return 'x';
-	else
-		return 'o';
-}
+///////////////////////////////////////////////////////////
+// Dictionary //
 
 var Dictionary = function(startValues) {
 	this.values = startValues || {};
