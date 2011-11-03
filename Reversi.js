@@ -102,9 +102,7 @@ var Game = function(size){
     if(this.currentPlayer.legalMoves === []) this.pass = true;        // if the current player can't move then he must pass and we have to check whether the second player can move
     else this.pass = false;                                           // if currPlayer can move we have to change the valueof pass to false
     return false;  
-  }
-	  //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
-  },
+  	},
 	  //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
 
 	makeMove: function(){
