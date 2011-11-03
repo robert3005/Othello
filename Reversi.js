@@ -57,7 +57,7 @@ var Player = function(id, color){
 	this.id = id;
 	this.color = color;
 	this.score = 0;
-  this.legalMoves = [];
+	this.legalMoves = [];
 };
 
 //---------------------------------------------------------
@@ -112,42 +112,50 @@ var Game = function(size){
 	makeMove: function(grid){
 		var move = "";//prompt("What's your next move, busy lady?(type in the coordinates in format 'width height' ", "");
 		var coords = convertInput(move);
-		getLegalMoves();
-		updateGrid(coords, grid);
+		var legalMoves = getLegalMoves();
+		updateGrid(coords, legalMoves);
 	},
 
 	getLegalMoves: function(){
-		var legalMoves = [],tilesToChange = [], tempTiles = [], localColor, state = [], outOutBounds = false;
+		var legalMoves = new Dictionary,tilesToChange = [], tempTiles = [], localColor, state = [], outOutBounds = false;
 	
 		var advance = function(){
 			state = grid.addTo(state, value);
-			if(state[0] == grid.size || state[1] == grid.size){
+			if(state[0] == this.grid.size || state[1] == this.grid.size){
 				outOfBounds = true;
 			} else {
 				localColor = grid.getFieldAt(state[0], state[1]).getColor;
 			}
 		};
 
-		grid.each(function(x, y){  // function is called for every field on the board
-			state = [x, y]; // state of the field which is currenly computed
-			directions.each(function(direction, value){ // function is called in all directions
-				advance(); // i move forward  one step in current direction
-				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty){ // loop works until a field is in wrong color or index is outofbounds
-					tilesToChange.push(state); // add every faced field to the array
-					advance(); // and move to the next field
+		grid.each(function(x, y){
+			state = [x, y];
+			directions.each(function(direction, value){
+				advance();
+				while(!outOfBounds && localColor != currentPlayer.getColor && localColor != colorsEnum.empty){
+					tempTiles.push(state);
+					advance();
 				}
 				if(outOfBounds && localColor == colorsEnum.empty){
-					tilesToChange.clear;
+					tempTiles.clear;
 				}
+				tilesToChange = tilesToChange.concat(tempTiles);
 			});
-			legalMoves.push([x, y, tilesToChange]);
+			if(tilesToChange.size > 0){
+				legalMoves.store([x, y], tilesToChange);
+			}
 			tilesToChange.clear;
 		});
 		return legalMoves;
 	},
 
-	function updateGrid(coords, grid){
-		
+	updateGrid: function(coords, legalMoves){
+		var tilesToChange = legalMoves.lookup([coords[0], coords[1]]),
+			fieldToChange;
+		for(var i = 0; i < tilesToChange.size; ++i){
+			fieldToChange = tilesToChange[i];
+			this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(currentPlayer.getColor);
+		}
 	};
 
 };
