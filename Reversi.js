@@ -99,7 +99,7 @@ var Player = function (id, color) {
         this.id = id;
         this.color = color;
         this.score = 2;
-        this.legalMoves = [];
+        this.legalMoves = new Dictionary();
         this.getColor = function(){
             return this.color;  
         };
@@ -175,7 +175,7 @@ var Game = function (size) {
 
             var advance = function (value) {
                     state = this.grid.addTo(state, value);
-                    if (state[0] === this.grid.size || state[1] === this.grid.size) {
+                    if (state[0] === this.grid.size || state[1] === this.grid.size || state[0] < 0 || state[1] < 0) {
                         outOfBounds = true;
                     } else {
                         localColor = this.grid.getFieldAt(state[0], state[1]).getColor;
@@ -191,10 +191,11 @@ var Game = function (size) {
                             tempTiles.push(state);
                             advance(value);
                         }
-                        if (outOfBounds && localColor === MY.colorsEnum.empty) {
+                        if (outOfBounds || localColor === MY.colorsEnum.empty) {
                             tempTiles.clear();
                         }
                         tilesToChange = tilesToChange.concat(tempTiles);
+                        tempTiles.clear();
                     });
                     if (tilesToChange.size > 0) {
                         legalMoves.store([x, y], tilesToChange);
