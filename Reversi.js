@@ -137,6 +137,7 @@ var Game = function (size) {
             this.currentPlayer = this.players[1];
             changePlayer();
             while (!this.isGameFinished()) {
+				// this.updateUI()
                 if (!this.pass) {
                     this.makeMove();
                 }

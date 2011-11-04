@@ -5,6 +5,8 @@
 		<script type="text/javascript">
 		(function () {
 		    "use strict";
+		    var whites = "#9d9d9d";
+		    var blacks = "#222";
 		    var size = 8;
 		    var cellsize = 64;
 		    var baseOffset = 100;
@@ -15,23 +17,33 @@
 		                stroke: "#422faa"
 		            });
 		            var circlefield = r.circle(xcord + cellsize / 2, ycord + cellsize / 2, 20).attr({
-		                fill: "#9d9d9d",
+		                fill: whites,
 		                stroke: "#000",
 		                opacity: 0
-		            }).data("in", false).toFront();
+		            }).data("defined", false).data("colour", whites);
+		            var toggleToken = function (op) {
+	                    return function () {
+	                        if (!circlefield.data("defined")) {
+	                            circlefield.animate({
+	                                opacity: op
+	                            }, 200, "backOut");
+	                        }
+		                };
+		            };
 		            var hoverField = r.rect(xcord, ycord, cellsize, cellsize).data("row", row).data("column", column).attr({
 		                fill: "#333333",
 		                stroke: "#422faa",
 		                opacity: 0
-		            }).hover(function () {
-		                this.animate({
-		                    opacity: 1
-		                }, 200, "backOut");
-		            }, function () {
-		                this.animate({
-		                    opacity: 0
-		                }, 200, "backOut");
-		            }, circlefield, circlefield);
+		            }).hover(toggleToken(1), toggleToken(0)).click(function () {
+		                if(circlefield.data("defined") === true) {
+		                	circlefield.data("colour", (circlefield.data("colour") === whites ? blacks : whites ));  
+		            	}
+		            	circlefield.data("defined", true);
+		                circlefield.attr({
+		                    opacity: 1,
+		                    fill: circlefield.data("colour")
+		                });
+		            });
 		        };
 		    var Raph = new Raphael("othello", gridsize, gridsize, function () {
 		        var r = this;
@@ -48,8 +60,8 @@
 		            fill: "#fa1247"
 		        });
 		        for (var i = 0; i < size * size; ++i) {
-		            var row = Math.floor(i / 8);
-		            var column = i % size;
+		            var column = Math.floor(i / 8);
+		            var row = i % size;
 		            var xcord = baseOffset + row * (cellsize + 1);
 		            var ycord = baseOffset + column * (cellsize + 1);
 		            new Field(xcord, ycord, row, column, r);
