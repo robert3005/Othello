@@ -18,8 +18,6 @@
 		            this.gridsize = this.size * this.cellsize + 2 * this.baseOffset;
 		            this.Game;
 		            this.drawingObject = Raphael("othello", this.gridsize, this.gridsize);
-		            this.allowedMoves = new Dictionary();
-		            this.currentPlayer;
 
 		            this.field = function (xcord, ycord, row, column, r) {
 		                var that = this;
@@ -40,7 +38,8 @@
 
 		                var toggleTokenColor = function (op, field) {
 		                        return function () {
-		                            if (that.allowedMoves.lookup([row, column]) !== undefined) {
+								alert(that.Game.currentPlayer.legalMoves.lookup([row, column]));
+		                            if (that.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
 		                                if (!field.data("defined")) {
 		                                    field.animate({
 		                                        opacity: op
@@ -55,7 +54,7 @@
 
 		                var placeToken = function (field) {
 		                        return function () {
-		                            if (that.allowedMoves.lookup([row, column]) !== undefined) {
+		                            if (that.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
 		                                field.data("defined", true);
 		                                field.attr({
 		                                    opacity: 1,
@@ -75,10 +74,11 @@
 		            this.initialise = function () {
 		                this.Game = new Game(this.size);
 		                this.Game.initialise();
+						//this.Game.getLegalMoves();
 		            }
 
 		            this.play = function () {
-		               /* while (!this.isGameFinished()) {
+						/* while (!this.isGameFinished()) {
 		                    // this.updateUI()
 		                    if (!this.pass) {
 		                        this.makeMove();

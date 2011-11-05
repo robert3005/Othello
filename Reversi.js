@@ -74,8 +74,8 @@ var Grid = function (size) {
         };
 
         this.each = function (action) {
-            for (var y = 0; y < this.height; ++y) {
-                for (var x = 0; this.width; ++x) {
+            for (var y = 0; y < this.size; ++y) {
+                for (var x = 0; x < this.size; ++x) {
                     action(x, y, this.getFieldAt(x, y));
                 }
             }
@@ -117,7 +117,7 @@ var Game = function (size) {
 
             this.players.push(new Player(1, MY.colorsEnum.white));
             this.players.push(new Player(2, MY.colorsEnum.black));
-            this.currentPlayer = this.players[1];
+            this.currentPlayer = this.players[0];
             this.changePlayer();
 
         };
@@ -164,8 +164,8 @@ var Game = function (size) {
             return false;
         };
         //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
-        this.makeMove = function () {
-            var coords = [0, 0]; // read Coords here
+        this.makeMove = function (x, y) {
+            var coords = [x,y]; // read Coords here
             this.updateGrid(coords);
         };
 
@@ -174,36 +174,37 @@ var Game = function (size) {
                 tilesToChange = [],
                 tempTiles = [],
                 localColor, state = [],
+				that = this,
                 outOfBounds = false;
 
             var advance = function (value) {
-                    state = this.grid.addTo(state, value);
-                    if (state[0] === this.grid.size || state[1] === this.grid.size || state[0] < 0 || state[1] < 0) {
+                    state = that.grid.addTo(state, value);
+                    if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
                         outOfBounds = true;
                     } else {
-                        localColor = this.grid.getFieldAt(state[0], state[1]).getColor;
+                        localColor = that.grid.getFieldAt(state[0], state[1]).color;
                     }
                 };
 
-            this.grid.each(function (x, y) {
+            this.grid.each(function (x, y, color) {
                 state = [x, y];
-                if (this.grid.getFieldAt(x, y).getColor === MY.colorsEnum.empty) {
-                    this.directions.each(function (direction, value) {
+                if (that.grid.getFieldAt(x, y).color === MY.colorsEnum.empty) {
+                    that.directions.each(function (direction, value) {
                         advance(value);
-                        while (!outOfBounds && localColor === this.otherPlayer.getColor()) {
+                        while (!outOfBounds && localColor === that.otherPlayer.color) {
                             tempTiles.push(state);
                             advance(value);
                         }
                         if (outOfBounds || localColor === MY.colorsEnum.empty) {
-                            tempTiles.clear();
+                            tempTiles = [];
                         }
                         tilesToChange = tilesToChange.concat(tempTiles);
-                        tempTiles.clear();
+                        tempTiles = [];
                     });
                     if (tilesToChange.size > 0) {
                         legalMoves.store([x, y], tilesToChange);
                     }
-                    tilesToChange.clear();
+                    tilesToChange = [];
                 }
             });
             return legalMoves;
@@ -214,10 +215,10 @@ var Game = function (size) {
                 fieldToChange, scoreDiff = tilesToChange.size;
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
-            this.grid.getFieldAt(coords[0], coords[1]).setColor(this.currentPlayer.getColor());
+            this.grid.getFieldAt(coords[0], coords[1]).setColor(this.currentPlayer.color);
             for (var i = 0; i < tilesToChange.size; ++i) {
                 fieldToChange = tilesToChange[i];
-                this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).setColor(this.currentPlayer.getColor());
+                this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).color = this.currentPlayer.color;
             }
         };
 
