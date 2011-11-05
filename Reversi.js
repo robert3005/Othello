@@ -182,6 +182,7 @@ var Game = function (size) {
                     if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
                         outOfBounds = true;
                     } else {
+                        outOfBounds = false;
                         localColor = that.grid.getFieldAt(state[0], state[1]).color;
                     }
                 };
@@ -192,6 +193,7 @@ var Game = function (size) {
                     that.directions.each(function (direction, value) {
                         advance(value);
                         while (!outOfBounds && localColor === that.otherPlayer.color) {
+                            alert(state);
                             tempTiles.push(state);
                             advance(value);
                         }
