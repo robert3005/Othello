@@ -214,11 +214,11 @@ var Game = function (size) {
 
         this.updateGrid = function (coords) {
             var tilesToChange = this.currentPlayer.legalMoves.lookup([coords[0], coords[1]]),
-                fieldToChange, scoreDiff = tilesToChange.size;
+                fieldToChange, scoreDiff = tilesToChange.length;
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
             this.grid.getFieldAt(coords[0], coords[1]).color = this.currentPlayer.color;
-            for (var i = 0; i < tilesToChange.size; ++i) {
+            for (var i = 0; i < tilesToChange.length; ++i) {
                 fieldToChange = tilesToChange[i];
                 this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).color = this.currentPlayer.color;
             }
