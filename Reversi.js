@@ -76,7 +76,7 @@ var Grid = function (size) {
         this.each = function (action) {
             for (var y = 0; y < this.size; ++y) {
                 for (var x = 0; x < this.size; ++x) {
-                    action(x, y, this.getFieldAt(x, y));
+                    action(x, y);
                 }
             }
         };
@@ -187,7 +187,7 @@ var Game = function (size) {
                     }
                 };
 
-            this.grid.each(function (x, y, color) {
+            this.grid.each(function (x, y) {
                 state = [x, y];
                 if (that.grid.getFieldAt(x, y).color === MY.colorsEnum.empty) {
                     that.directions.each(function (direction, value) {
@@ -217,7 +217,7 @@ var Game = function (size) {
                 fieldToChange, scoreDiff = tilesToChange.size;
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
-            this.grid.getFieldAt(coords[0], coords[1]).setColor(this.currentPlayer.color);
+            this.grid.getFieldAt(coords[0], coords[1]).color = this.currentPlayer.color;
             for (var i = 0; i < tilesToChange.size; ++i) {
                 fieldToChange = tilesToChange[i];
                 this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).color = this.currentPlayer.color;
