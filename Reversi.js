@@ -30,31 +30,25 @@ var Dictionary = function (startValues) {
             this.forEachIn(this.values, action);
         };
 
+        this.isEmpty = function () {
+            return this.values === {};
+        }
 
     };
 
 ///////////////////////////////////////////////////////////
 // Field's functions //
 MY.colorsEnum = {
-    white: 1,
-    black: 2,
-    empty: 3
+    white: 0,
+    black: 1,
+    empty: 2
 };
 Object.freeze(MY.colorsEnum);
 
 var Field = function (color) {
         "use strict";
-        this.color = MY.colorsEnum.empty;
-
-        this.setColor = function (color) {
-            this.color = color;
-        };
-
-        this.getColor = function () {
-            return this.color;
-        };
-
-    };
+        this.color = color;
+};
 
 ///////////////////////////////////////////////////////////
 // Grid's functions //
@@ -64,19 +58,19 @@ var Grid = function (size) {
         this.cells = [];
 
         this.populate = function () {
-            for (var y = 0; y < this.height; ++y) {
-                for (var x = 0; x < this.width; ++x) {
-                    this.setFieldAt(x, y, new Field());
+            for (var y = 0; y < this.size; ++y) {
+                for (var x = 0; x < this.size; ++x) {
+                    this.setFieldAt(x, y, new Field(MY.colorsEnum.empty));
                 }
             }
         };
 
         this.getFieldAt = function (x, y) {
-            return this.cells[y * this.width + x];
+            return this.cells[y * this.size + x];
         };
 
         this.setFieldAt = function (x, y, field) {
-            this.cells[y * this.width + x] = field;
+            this.cells[y * this.size + x] = field;
         };
 
         this.each = function (action) {
@@ -100,9 +94,6 @@ var Player = function (id, color) {
         this.color = color;
         this.score = 2;
         this.legalMoves = new Dictionary();
-        this.getColor = function(){
-            return this.color;  
-        };
     };
 
 ///////////////////////////////////////////////////////////
@@ -114,19 +105,27 @@ var Game = function (size) {
         this.pass = false; // in the beginning no player could pass
         this.currentPlayer = {};
         this.otherPlayer = {};
+        this.round = 0;
 
         this.initialise = function () {
-            var middleField = this.grid.size / 2;
-            this.grid.getFieldAt(middleField, middleField).setColor(MY.colorsEnum.white);
-            this.grid.getFieldAt(middleField + 1, middleField + 1).setColor(MY.colorsEnum.white);
-            this.grid.getFieldAt(middleField + 1, middleField).setColor(MY.colorsEnum.black);
-            this.grid.getFieldAt(middleField, middleField + 1).setColor(MY.colorsEnum.black);
+            this.grid.populate();
+            var middleField = parseInt(this.grid.size / 2);
+            this.grid.getFieldAt(middleField - 1, middleField - 1).color = MY.colorsEnum.white;
+            this.grid.getFieldAt(middleField, middleField).color = MY.colorsEnum.white;
+            this.grid.getFieldAt(middleField, middleField - 1).color = MY.colorsEnum.black;
+            this.grid.getFieldAt(middleField - 1, middleField).color = MY.colorsEnum.black;
+
+            this.players.push(new Player(1, MY.colorsEnum.white));
+            this.players.push(new Player(2, MY.colorsEnum.black));
+            this.currentPlayer = this.players[1];
+            this.changePlayer();
+
         };
 
         this.play = function () {
             var i = 0;
             var changePlayer = function () {
-                    this.otherPlayer = this.currentPlayer; 
+                    this.otherPlayer = this.currentPlayer;
                     this.currentPlayer = this.players[i];
                     this.currentPlayer.legalMoves = this.getLegalMoves();
                 };
@@ -137,22 +136,26 @@ var Game = function (size) {
             this.currentPlayer = this.players[1];
             changePlayer();
             while (!this.isGameFinished()) {
-				// this.updateUI()
                 if (!this.pass) {
                     this.makeMove();
                 }
                 i = (i + 1) % 2;
                 changePlayer();
             }
-            //alert("Game is over./n")
-            //alert(this.printScore);
+        };
+
+        this.changePlayer = function () {
+            this.otherPlayer = this.currentPlayer;
+            this.currentPlayer = this.players[this.round];
+            this.currentPlayer.legalMoves = this.getLegalMoves();
+            this.round = (this.round + 1) % 2;
         };
 
         this.isGameFinished = function () {
-            if (this.currentPlayer.legalMoves === [] && this.pass) {
+            if (this.currentPlayer.legalMoves.isEmpty() && this.pass) {
                 return true;
             } // if the currPlayer can't move and the prevPlayer passed then we finish the game
-            if (this.currentPlayer.legalMoves === []) {
+            if (this.currentPlayer.legalMoves.isEmpty()) {
                 this.pass = true;
             } // if the current player can't move then he must pass and we have to check whether the second player can move
             else {
@@ -245,4 +248,4 @@ var main = function () {
         game.play();
     };
 
-main();
+//main();

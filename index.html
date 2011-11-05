@@ -2,72 +2,119 @@
 <html>
 	<head>
 		<script type="text/javascript" src="raphael-min.js"></script>
+				<script type="text/javascript" src="Reversi.js"></script>
 		<script type="text/javascript">
-		(function () {
-		    "use strict";
-		    var whites = "#9d9d9d";
-		    var blacks = "#222";
-		    var size = 8;
-		    var cellsize = 64;
-		    var baseOffset = 100;
-		    var gridsize = size * cellsize + 2 * baseOffset;
-		    var Field = function (xcord, ycord, row, column, r) {
-		            var field = r.rect(xcord, ycord, cellsize, cellsize).attr({
-		                fill: "#333333",
-		                stroke: "#422faa"
-		            });
-		            var circlefield = r.circle(xcord + cellsize / 2, ycord + cellsize / 2, 20).attr({
-		                fill: whites,
-		                stroke: "#000",
-		                opacity: 0
-		            }).data("defined", false).data("colour", whites);
-		            var toggleToken = function (op) {
-	                    return function () {
-	                        if (!circlefield.data("defined")) {
-	                            circlefield.animate({
-	                                opacity: op
-	                            }, 200, "backOut");
-	                        }
-		                };
-		            };
-		            var hoverField = r.rect(xcord, ycord, cellsize, cellsize).data("row", row).data("column", column).attr({
-		                fill: "#333333",
-		                stroke: "#422faa",
-		                opacity: 0
-		            }).hover(toggleToken(1), toggleToken(0)).click(function () {
-		                if(circlefield.data("defined") === true) {
-		                	circlefield.data("colour", (circlefield.data("colour") === whites ? blacks : whites ));  
-		            	}
-		            	circlefield.data("defined", true);
-		                circlefield.attr({
-		                    opacity: 1,
-		                    fill: circlefield.data("colour")
+		window.onload = function () {
+		    var ReversiUI = function () {
+		            "use strict";
+		            this.boardColor = "#333";
+		            this.cellBorderColor = "#422faa";
+		            this.whites = "#9d9d9d";
+		            this.blacks = "#222";
+		            this.tokenBorder = "#000";
+		            this.size = 8;
+		            this.cellsize = 64;
+		            this.baseOffset = 100;
+		            this.gridsize = this.size * this.cellsize + 2 * this.baseOffset;
+		            this.Game;
+		            this.drawingObject = Raphael("othello", this.gridsize, this.gridsize);
+		            this.allowedMoves = new Dictionary();
+		            this.currentPlayer;
+
+		            this.field = function (xcord, ycord, row, column, r) {
+		                var that = this;
+		                var colour = this.Game.grid.getFieldAt(row, column).color;
+		                var defined = colour === MY.colorsEnum.empty ? false : true;
+		                colour = colour === MY.colorsEnum.white ? this.whites : this.blacks;
+
+		                var fieldBackground = r.rect(xcord, ycord, this.cellsize, this.cellsize).attr({
+		                    fill: this.boardColor,
+		                    stroke: this.cellBorderColor
 		                });
-		            });
-		        };
-		    var Raph = new Raphael("othello", gridsize, gridsize, function () {
-		        var r = this;
-		        var header = r.text(356, 50, "White play").attr({
-		            font: "bold 40px Helvetica",
-		            fill: "#9872fa"
-		        });
-		        var leftPlayer = r.text(40, 130, "White\n Scores").attr({
-		            font: "bold 14px Helvetica",
-		            fill: "#fa1247"
-		        });
-		        var rightPlayer = r.text(672, 130, "Black\n Scores").attr({
-		            font: "bold 14px Helvetica",
-		            fill: "#fa1247"
-		        });
-		        for (var i = 0; i < size * size; ++i) {
-		            var column = Math.floor(i / 8);
-		            var row = i % size;
-		            var xcord = baseOffset + row * (cellsize + 1);
-		            var ycord = baseOffset + column * (cellsize + 1);
-		            new Field(xcord, ycord, row, column, r);
+
+		                var token = r.circle(xcord + this.cellsize / 2, ycord + this.cellsize / 2, 20).attr({
+		                    fill: colour,
+		                    stroke: this.tokenBorder,
+		                    opacity: defined ? 1 : 0
+		                }).data("defined", defined).data("colour", colour);
+
+		                var toggleTokenColor = function (op, field) {
+		                        return function () {
+		                            if (that.allowedMoves.lookup([row, column]) !== undefined) {
+		                                if (!field.data("defined")) {
+		                                    field.animate({
+		                                        opacity: op
+		                                    }, 200, "backOut");
+		                                    field.attr({
+		                                        fill: this.currentPlayer.color === MY.colorsEnum.white ? that.whites : that.blacks
+		                                    });
+		                                }
+		                            };
+		                        }
+		                    };
+
+		                var placeToken = function (field) {
+		                        return function () {
+		                            if (that.allowedMoves.lookup([row, column]) !== undefined) {
+		                                field.data("defined", true);
+		                                field.attr({
+		                                    opacity: 1,
+		                                    fill: field.data("colour")
+		                                });
+		                            }
+		                        }
+		                    };
+
+		                var eventField = r.rect(xcord, ycord, this.cellsize, this.cellsize).data("row", row).data("column", column).attr({
+		                    fill: this.boardColor,
+		                    stroke: this.cellBorderColor,
+		                    opacity: 0
+		                }).hover(toggleTokenColor(1, token), toggleTokenColor(0, token)).click(placeToken(token));
+		            };
+
+		            this.initialise = function () {
+		                this.Game = new Game(this.size);
+		                this.Game.initialise();
+		            }
+
+		            this.play = function () {
+		               /* while (!this.isGameFinished()) {
+		                    // this.updateUI()
+		                    if (!this.pass) {
+		                        this.makeMove();
+		                    }
+		                    i = (i + 1) % 2;
+		                    changePlayer();
+		                }*/
+		            }
+		            this.drawBoard = function () {
+		                var r = this.drawingObject;
+		                var header = r.text(356, 50, "White play").attr({
+		                    font: "bold 40px Helvetica",
+		                    fill: "#9872fa"
+		                });
+		                var leftPlayer = r.text(40, 130, "White\n Scores").attr({
+		                    font: "bold 14px Helvetica",
+		                    fill: "#fa1247"
+		                });
+		                var rightPlayer = r.text(672, 130, "Black\n Scores").attr({
+		                    font: "bold 14px Helvetica",
+		                    fill: "#fa1247"
+		                });
+		                for (var i = 0; i < this.size * this.size; ++i) {
+		                    var column = Math.floor(i / 8);
+		                    var row = i % this.size;
+		                    var xcord = this.baseOffset + row * (this.cellsize + 1);
+		                    var ycord = this.baseOffset + column * (this.cellsize + 1);
+		                    this.field(xcord, ycord, row, column, r);
+		                }
+		            }
 		        }
-		    });
-		})();
+
+		    var UI = new ReversiUI();
+		    UI.initialise();
+		    UI.drawBoard();
+		}
 		</script>
 		<title>Raphael Othello</title>
 	</head>
