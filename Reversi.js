@@ -193,7 +193,6 @@ var Game = function (size) {
                     that.directions.each(function (direction, value) {
                         advance(value);
                         while (!outOfBounds && localColor === that.otherPlayer.color) {
-                            alert(state);
                             tempTiles.push(state);
                             advance(value);
                         }
@@ -202,8 +201,9 @@ var Game = function (size) {
                         }
                         tilesToChange = tilesToChange.concat(tempTiles);
                         tempTiles = [];
+                        state = [x,y];
                     });
-                    if (tilesToChange.size > 0) {
+                    if (tilesToChange.length > 0) {
                         legalMoves.store([x, y], tilesToChange);
                     }
                     tilesToChange = [];
