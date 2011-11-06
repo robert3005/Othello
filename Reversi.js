@@ -151,6 +151,11 @@ var Game = function (size) {
             this.otherPlayer = this.currentPlayer;
             this.currentPlayer = this.players[this.round];
             this.currentPlayer.legalMoves = this.getLegalMoves();
+            if(this.currentPlayer.legalMoves.isEmpty()) {
+                this.pass = true;
+            } else {
+                this.pass = false;
+            }
             this.round = (this.round + 1) % 2;
         };
 
@@ -158,12 +163,6 @@ var Game = function (size) {
             if (this.currentPlayer.legalMoves.isEmpty() && this.pass) {
                 return true;
             } // if the currPlayer can't move and the prevPlayer passed then we finish the game
-            if (this.currentPlayer.legalMoves.isEmpty()) {
-                this.pass = true;
-            } // if the current player can't move then he must pass and we have to check whether the second player can move
-            else {
-                this.pass = false;
-            } // if currPlayer can move we have to change the valueof pass to false
             return false;
         };
         //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;

@@ -62,7 +62,7 @@ window.onload = function () {
 						}
 					};
 
-				var eventField = r.rect(xcord, ycord, this.cellsize, this.cellsize).data("row", row).data("column", column).attr({
+				var eventField = r.rect(xcord, ycord, this.cellsize, this.cellsize).attr({
 					fill: this.boardColor,
 					stroke: this.cellBorderColor,
 					opacity: 0
@@ -77,8 +77,6 @@ window.onload = function () {
 
 			this.makeMove = function (row, column) {
 				var that = this;
-				if (!this.Game.isGameFinished()) {
-					if (!this.Game.pass) {
 						this.Game.makeMove(row, column);
 						var tilesToChange = this.Game.currentPlayer.legalMoves.lookup([row, column]);
 						tilesToChange.forEach(function (coords, index, array) {
@@ -86,13 +84,14 @@ window.onload = function () {
 								fill: that.translateColor(that.Game.currentPlayer.color)
 							});
 						});
-					}
-					this.Game.changePlayer();
-				} else {
+				this.Game.changePlayer();
+				if(this.Game.isGameFinished()) {
 					this.printWinner();
 				}
 				this.updateScore();
-
+				if(this.Game.pass) {
+					this.Game.changePlayer();
+				}
 			}
 
 			this.updateScore = function () {
