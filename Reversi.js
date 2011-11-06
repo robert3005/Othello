@@ -31,13 +31,12 @@ var Dictionary = function (startValues) {
         };
 
         this.isEmpty = function () {
-                for(var prop in this.values) {
-                    if(this.values.hasOwnProperty(prop))
-                        return false;
-                }
-
-                return true;
+            for (var prop in this.values) {
+                if (this.values.hasOwnProperty(prop)) return false;
             }
+
+            return true;
+        }
     };
 
 ///////////////////////////////////////////////////////////
@@ -52,7 +51,7 @@ Object.freeze(MY.colorsEnum);
 var Field = function (color) {
         "use strict";
         this.color = color;
-};
+    };
 
 ///////////////////////////////////////////////////////////
 // Grid's functions //
@@ -126,7 +125,7 @@ var Game = function (size) {
 
         };
 
-        /*this.play = function () {
+/*this.play = function () {
             var i = 0;
             var changePlayer = function () {
                     this.otherPlayer = this.currentPlayer;
@@ -169,7 +168,7 @@ var Game = function (size) {
         };
         //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
         this.makeMove = function (x, y) {
-            this.updateGrid(x,y);
+            this.updateGrid(x, y);
         };
 
         this.getLegalMoves = function () {
@@ -177,7 +176,7 @@ var Game = function (size) {
                 tilesToChange = [],
                 tempTiles = [],
                 localColor, state = [],
-				that = this,
+                that = this,
                 outOfBounds = false;
 
             var advance = function (value) {
@@ -204,7 +203,7 @@ var Game = function (size) {
                         }
                         tilesToChange = tilesToChange.concat(tempTiles);
                         tempTiles = [];
-                        state = [x,y];
+                        state = [x, y];
                     });
                     if (tilesToChange.length > 0) {
                         legalMoves.store([x, y], tilesToChange);
@@ -215,7 +214,7 @@ var Game = function (size) {
             return legalMoves;
         };
 
-        this.updateGrid = function (x,y) {
+        this.updateGrid = function (x, y) {
             var tilesToChange = this.currentPlayer.legalMoves.lookup([x, y]),
                 fieldToChange, scoreDiff = tilesToChange.length;
             this.currentPlayer.score += (scoreDiff + 1);
