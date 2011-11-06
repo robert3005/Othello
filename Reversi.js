@@ -31,9 +31,13 @@ var Dictionary = function (startValues) {
         };
 
         this.isEmpty = function () {
-            return this.values === {};
-        }
+                for(var prop in this.values) {
+                    if(this.values.hasOwnProperty(prop))
+                        return false;
+                }
 
+                return true;
+            }
     };
 
 ///////////////////////////////////////////////////////////
@@ -105,7 +109,7 @@ var Game = function (size) {
         this.pass = false; // in the beginning no player could pass
         this.currentPlayer = {};
         this.otherPlayer = {};
-        this.round = 0;
+        this.round = 1;
 
         this.initialise = function () {
             this.grid.populate();
@@ -122,7 +126,7 @@ var Game = function (size) {
 
         };
 
-        this.play = function () {
+        /*this.play = function () {
             var i = 0;
             var changePlayer = function () {
                     this.otherPlayer = this.currentPlayer;
@@ -142,7 +146,7 @@ var Game = function (size) {
                 i = (i + 1) % 2;
                 changePlayer();
             }
-        };
+        };*/
 
         this.changePlayer = function () {
             this.otherPlayer = this.currentPlayer;
@@ -165,8 +169,7 @@ var Game = function (size) {
         };
         //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
         this.makeMove = function (x, y) {
-            var coords = [x,y]; // read Coords here
-            this.updateGrid(coords);
+            this.updateGrid(x,y);
         };
 
         this.getLegalMoves = function () {
@@ -212,13 +215,13 @@ var Game = function (size) {
             return legalMoves;
         };
 
-        this.updateGrid = function (coords) {
-            var tilesToChange = this.currentPlayer.legalMoves.lookup([coords[0], coords[1]]),
-                fieldToChange, scoreDiff = tilesToChange.size;
+        this.updateGrid = function (x,y) {
+            var tilesToChange = this.currentPlayer.legalMoves.lookup([x, y]),
+                fieldToChange, scoreDiff = tilesToChange.length;
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
-            this.grid.getFieldAt(coords[0], coords[1]).color = this.currentPlayer.color;
-            for (var i = 0; i < tilesToChange.size; ++i) {
+            this.grid.getFieldAt(x, y).color = this.currentPlayer.color;
+            for (var i = 0; i < tilesToChange.length; ++i) {
                 fieldToChange = tilesToChange[i];
                 this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).color = this.currentPlayer.color;
             }
