@@ -37,15 +37,14 @@ window.onload = function () {
 					opacity: defined ? 1 : 0
 				}).data("defined", defined);
 
-				var toggleTokenColor = function (op, field) {
+				var toggleTokenColor = function (op) {
 						return function () {
-
-							if (that.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
-								field.attr({
-									fill: that.translateColor(that.Game.currentPlayer.color)
+							if (this.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
+								token.attr({
+									fill: this.translateColor(this.Game.currentPlayer.color)
 								});
-								if (!field.data("defined")) {
-									field.animate({
+								if (!token.data("defined")) {
+									token.animate({
 										opacity: op
 									}, 200, "backOut");
 								}
@@ -53,14 +52,14 @@ window.onload = function () {
 						}
 					};
 
-				var placeToken = function (field) {
+				var placeToken = function (obj) {
 						return function () {
-							if (that.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
-								field.data("defined", true);
-								field.attr({
+							if (obj.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
+								token.data("defined", true);
+								token.attr({
 									opacity: 1,
 								});
-								that.makeMove(row, column);
+								obj.makeMove(row, column);
 							}
 						}
 					};
@@ -69,7 +68,7 @@ window.onload = function () {
 					fill: this.boardColor,
 					stroke: this.cellBorderColor,
 					opacity: 0
-				}).hover(toggleTokenColor(1, token), toggleTokenColor(0, token)).click(placeToken(token));
+				}).hover(toggleTokenColor(1), toggleTokenColor(0), this, this).click(placeToken(this));
 				return token.id;
 			};
 
@@ -79,52 +78,46 @@ window.onload = function () {
 			}
 
 			this.makeMove = function (row, column) {
-				var that = this;
 				this.Game.makeMove(row, column);
 				var tilesToChange = this.Game.currentPlayer.legalMoves.lookup([row, column]);
-				var tiles = this.drawingObject.set();
+				var tilesDrawables = this.drawingObject.set();
 				tilesToChange.forEach(function (coords, index, array) {
-					tiles.push(that.drawingObject.getById(that.fieldList[coords[1] * that.size + coords[0]]))
-				});
-				tiles.animate({
-					fill: that.translateColor(that.Game.currentPlayer.color)
+					tilesDrawables.push(this.drawingObject.getById(this.fieldList[coords[1] * this.size + coords[0]]))
+				}, this);
+				tilesDrawables.animate({
+					fill: this.translateColor(this.Game.currentPlayer.color)
 				}, 300, "backOut");
 				this.Game.changePlayer();
-				this.updateScore();
+				this.updateBoardInfo();
 				if (this.Game.pass) {
 					this.Game.changePlayer();
-					this.updateScore();
+					this.updateBoardInfo();
 				}
 				if (this.Game.isGameFinished()) {
 					this.printWinner();
 				}
 			}
 
-			this.updateScore = function () {
+			this.updateBoardInfo = function () {
 				for (var i = this.scores.length; i > 0; --i) {
 					this.scores[i] = this.scores[i - 1];
 				}
 				this.scores[0] = [this.Game.players[0].score, this.Game.players[1].score];
-				var numberOfLastScores = this.scores.length > 5 ? 5 : this.scores.length;
-				for (var j = 0; j < numberOfLastScores; ++j) {
-					if (this.scoreBoard[0][j] !== undefined) {
-						this.scoreBoard[0][j].remove();
-					}
-					if (this.scoreBoard[1][j] !== undefined) {
-						this.scoreBoard[1][j].remove();
-					}
-					var position = 150 + (j + 1) * 15;
-					this.scoreBoard[0][j] = this.drawingObject.text(40, position).attr({
-						font: "bold 14px Helvetica",
-						fill: "#fa1247",
-						text: this.scores[j][0],
-					});
-					this.scoreBoard[1][j] = this.drawingObject.text(this.gridsize - 40, position).attr({
-						font: "bold 14px Helvetica",
-						fill: "#fa1247",
-						text: this.scores[j][1],
-					});
-				}
+				var lastScores = this.scores.slice(0, 5);
+				lastScores.forEach(function (score, index, scoresArray) {
+					this.scoreBoard.forEach(function (scoresDisplay, player, scoreBoardArray) {
+						var screenEdge = player === 0 ? 40 : this.gridsize - 40;
+						var position = 150 + (index + 1) * 15;
+						if (scoresDisplay[index] !== undefined) {
+							scoresDisplay[index].remove();
+						}
+						scoresDisplay[index] = this.drawingObject.text(screenEdge, position).attr({
+							font: "bold 14px Helvetica",
+							fill: "#fa1247",
+							text: this.scores[index][player]
+						});
+					}, this)
+				}, this);
 				this.header.attr({
 					text: this.getCurrentPlayer(this.Game.currentPlayer.color) + " Turn"
 				});
@@ -139,7 +132,7 @@ window.onload = function () {
 						winner = player;
 					}
 				});
-				this.drawingObject.text(this.gridsize / 2, 662).attr({
+				this.drawingObject.text(this.gridsize / 2, this.gridsize - 40).attr({
 					font: "bold 40px Helvetica",
 					fill: "#9872fa",
 					text: this.getCurrentPlayer(winner.color) + " Win"
@@ -178,7 +171,7 @@ window.onload = function () {
 					var fieldId = this.field(xcord, ycord, row, column, r);
 					this.fieldList[row * this.size + column] = fieldId;
 				}
-				this.updateScore();
+				this.updateBoardInfo();
 			}
 		}
 
