@@ -32,9 +32,11 @@ var Dictionary = function (startValues) {
 
         this.isEmpty = function () {
             for (var prop in this.values) {
-                if (this.values.hasOwnProperty(prop)) return false;
-            }
+                if (this.values.hasOwnProperty(prop)) {
+                    return false;
 
+               }
+            }
             return true;
         }
     };
@@ -125,28 +127,6 @@ var Game = function (size) {
 
         };
 
-/*this.play = function () {
-            var i = 0;
-            var changePlayer = function () {
-                    this.otherPlayer = this.currentPlayer;
-                    this.currentPlayer = this.players[i];
-                    this.currentPlayer.legalMoves = this.getLegalMoves();
-                };
-
-            this.initialise();
-            this.players.push(new Player(1, MY.colorsEnum.white));
-            this.players.push(new Player(2, MY.colorsEnum.black));
-            this.currentPlayer = this.players[1];
-            changePlayer();
-            while (!this.isGameFinished()) {
-                if (!this.pass) {
-                    this.makeMove();
-                }
-                i = (i + 1) % 2;
-                changePlayer();
-            }
-        };*/
-
         this.changePlayer = function () {
             this.otherPlayer = this.currentPlayer;
             this.currentPlayer = this.players[this.round];
@@ -165,7 +145,7 @@ var Game = function (size) {
             } // if the currPlayer can't move and the prevPlayer passed then we finish the game
             return false;
         };
-        //return (this.currentPlayer.legalMoves === []) ? !this.pass : true;
+
         this.makeMove = function (x, y) {
             this.updateGrid(x, y);
         };
@@ -236,20 +216,3 @@ var Game = function (size) {
             "nw": [-1, -1]
         });
     };
-
-///////////////////////////////////////////////////////////
-// main //
-var main = function () {
-        "use strict";
-        var size, game;
-        while (1) {
-            size = 8; // = prompt("Could you enter the size of the grid (only even numbers): ", "");
-            if (size % 2 === 0) {
-                break;
-            }
-        }
-        game = new Game(size);
-        game.play();
-    };
-
-//main();

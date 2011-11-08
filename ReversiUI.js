@@ -14,7 +14,10 @@ window.onload = function () {
 			this.drawingObject = Raphael("othello", this.gridsize, this.gridsize);
 			this.header;
 			this.scores = [];
-			this.scoreBoard = [];
+			this.scoreBoard = [
+				[],
+				[]
+			];
 			this.fieldList = [];
 
 			this.field = function (xcord, ycord, column, row, r) {
@@ -77,20 +80,23 @@ window.onload = function () {
 
 			this.makeMove = function (row, column) {
 				var that = this;
-						this.Game.makeMove(row, column);
-						var tilesToChange = this.Game.currentPlayer.legalMoves.lookup([row, column]);
-						tilesToChange.forEach(function (coords, index, array) {
-							that.drawingObject.getById(that.fieldList[coords[1] * that.size + coords[0]]).attr({
-								fill: that.translateColor(that.Game.currentPlayer.color)
-							});
-						});
+				this.Game.makeMove(row, column);
+				var tilesToChange = this.Game.currentPlayer.legalMoves.lookup([row, column]);
+				var tiles = this.drawingObject.set();
+				tilesToChange.forEach(function (coords, index, array) {
+					tiles.push(that.drawingObject.getById(that.fieldList[coords[1] * that.size + coords[0]]))
+				});
+				tiles.animate({
+					fill: that.translateColor(that.Game.currentPlayer.color)
+				}, 300, "backOut");
 				this.Game.changePlayer();
-				if(this.Game.isGameFinished()) {
-					this.printWinner();
-				}
 				this.updateScore();
-				if(this.Game.pass) {
+				if (this.Game.pass) {
 					this.Game.changePlayer();
+					this.updateScore();
+				}
+				if (this.Game.isGameFinished()) {
+					this.printWinner();
 				}
 			}
 
@@ -99,31 +105,26 @@ window.onload = function () {
 					this.scores[i] = this.scores[i - 1];
 				}
 				this.scores[0] = [this.Game.players[0].score, this.Game.players[1].score];
-				var whiteScores = "",
-					blackScores = "";
-				for (var j = 0; j < this.scores.length; ++j) {
-					whiteScores += this.scores[j][0] + "\n";
-					blackScores += this.scores[j][1] + "\n";
+				var numberOfLastScores = this.scores.length > 5 ? 5 : this.scores.length;
+				for (var j = 0; j < numberOfLastScores; ++j) {
+					if (this.scoreBoard[0][j] !== undefined) {
+						this.scoreBoard[0][j].remove();
+					}
+					if (this.scoreBoard[1][j] !== undefined) {
+						this.scoreBoard[1][j].remove();
+					}
+					var position = 150 + (j + 1) * 15;
+					this.scoreBoard[0][j] = this.drawingObject.text(40, position).attr({
+						font: "bold 14px Helvetica",
+						fill: "#fa1247",
+						text: this.scores[j][0],
+					});
+					this.scoreBoard[1][j] = this.drawingObject.text(this.gridsize - 40, position).attr({
+						font: "bold 14px Helvetica",
+						fill: "#fa1247",
+						text: this.scores[j][1],
+					});
 				}
-				if (this.scoreBoard[0] !== undefined) {
-					this.scoreBoard[0].remove();
-				}
-				if (this.scoreBoard[1] !== undefined) {
-					this.scoreBoard[1].remove();
-				}
-				var position = 150 + this.scores.length * 9;
-				this.scoreBoard[0] = this.drawingObject.text(40, position).attr({
-					font: "bold 14px Helvetica",
-					fill: "#fa1247",
-					text: whiteScores,
-					"text-anchor": "end"
-				});
-				this.scoreBoard[1] = this.drawingObject.text(672, position).attr({
-					font: "bold 14px Helvetica",
-					fill: "#fa1247",
-					text: blackScores,
-					"text-anchor": "end"
-				});
 				this.header.attr({
 					text: this.getCurrentPlayer(this.Game.currentPlayer.color) + " Turn"
 				});
@@ -138,7 +139,7 @@ window.onload = function () {
 						winner = player;
 					}
 				});
-				this.drawingObject.text(356, 662).attr({
+				this.drawingObject.text(this.gridsize / 2, 662).attr({
 					font: "bold 40px Helvetica",
 					fill: "#9872fa",
 					text: this.getCurrentPlayer(winner.color) + " Win"
@@ -156,21 +157,21 @@ window.onload = function () {
 
 			this.drawBoard = function () {
 				var r = this.drawingObject;
-				this.header = r.text(356, 50).attr({
+				this.header = r.text(this.gridsize / 2, 50).attr({
 					font: "bold 40px Helvetica",
 					fill: "#9872fa",
 					text: "Blacks Turn"
 				});
 				var whitePlayerScores = r.text(40, 130, "White\n Scores").attr({
-					font: "bold 14px Helvetica",
+					font: "bold 16px Helvetica",
 					fill: "#fa1247"
 				});
-				var blackPlayerScores = r.text(672, 130, "Black\n Scores").attr({
-					font: "bold 14px Helvetica",
+				var blackPlayerScores = r.text(this.gridsize - 40, 130, "Black\n Scores").attr({
+					font: "bold 16px Helvetica",
 					fill: "#fa1247"
 				});
 				for (var i = 0; i < this.size * this.size; ++i) {
-					var column = Math.floor(i / 8);
+					var column = Math.floor(i / this.size);
 					var row = i % this.size;
 					var xcord = this.baseOffset + row * (this.cellsize + 1);
 					var ycord = this.baseOffset + column * (this.cellsize + 1);
