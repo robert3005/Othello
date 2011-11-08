@@ -199,10 +199,9 @@ var Game = function (size) {
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
             this.grid.getFieldAt(x, y).color = this.currentPlayer.color;
-            for (var i = 0; i < tilesToChange.length; ++i) {
-                fieldToChange = tilesToChange[i];
-                this.grid.getFieldAt(fieldToChange[0], fieldToChange[1]).color = this.currentPlayer.color;
-            }
+            tilesToChange.forEach(function(field, index, array) {
+                this.grid.getFieldAt(field[0], field[1]).color = this.currentPlayer.color;
+            }, this);
         };
 
         this.directions = new Dictionary({
