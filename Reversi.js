@@ -131,11 +131,7 @@ var Game = function (size) {
             this.otherPlayer = this.currentPlayer;
             this.currentPlayer = this.players[this.round];
             this.currentPlayer.legalMoves = this.getLegalMoves();
-            if(this.currentPlayer.legalMoves.isEmpty()) {
-                this.pass = true;
-            } else {
-                this.pass = false;
-            }
+            this.pass = this.currentPlayer.legalMoves.isEmpty() ? true : false;
             this.round = (this.round + 1) % 2;
         };
 
@@ -159,14 +155,14 @@ var Game = function (size) {
                 outOfBounds = false;
 
             var advance = function (value) {
-                    state = that.grid.addTo(state, value);
-                    if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
-                        outOfBounds = true;
-                    } else {
-                        outOfBounds = false;
-                        localColor = that.grid.getFieldAt(state[0], state[1]).color;
-                    }
-                };
+                state = that.grid.addTo(state, value);
+                if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
+                    outOfBounds = true;
+                } else {
+                    outOfBounds = false;
+                    localColor = that.grid.getFieldAt(state[0], state[1]).color;
+                }
+            };
 
             this.grid.each(function (x, y) {
                 state = [x, y];
@@ -214,4 +210,4 @@ var Game = function (size) {
             "w": [-1, 0],
             "nw": [-1, -1]
         });
-    };
+    };   

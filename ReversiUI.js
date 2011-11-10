@@ -107,15 +107,20 @@ window.onload = function () {
 				lastScores.forEach(function (score, index, scoresArray) {
 					this.scoreBoard.forEach(function (scoresDisplay, player, scoreBoardArray) {
 						var screenEdge = player === 0 ? 40 : this.gridsize - 40;
-						var position = 150 + (index + 1) * 15;
+						var fontSize = 32 - index * 3
+						var position = 150 + (index + 1) * 25
+						console.log(fontSize, position);
 						if (scoresDisplay[index] !== undefined) {
-							scoresDisplay[index].remove();
-						}
+							scoresDisplay[index].attr({
+								text: this.scores[index][player]
+							});
+						} else {
 						scoresDisplay[index] = this.drawingObject.text(screenEdge, position).attr({
-							font: "bold 14px Helvetica",
+							font: "bold " + fontSize + "px Helvetica",
 							fill: "#fa1247",
 							text: this.scores[index][player]
 						});
+					}
 					}, this)
 				}, this);
 				this.header.attr({
@@ -149,6 +154,9 @@ window.onload = function () {
 			}
 
 			this.drawBoard = function () {
+				var canvas =  document.getElementById("othello");
+				canvas.style.width = this.gridsize + "px";
+				canvas.style.margin = "0 auto";
 				var r = this.drawingObject;
 				this.header = r.text(this.gridsize / 2, 50).attr({
 					font: "bold 40px Helvetica",
@@ -166,8 +174,8 @@ window.onload = function () {
 				for (var i = 0; i < this.size * this.size; ++i) {
 					var column = Math.floor(i / this.size);
 					var row = i % this.size;
-					var xcord = this.baseOffset + row * (this.cellsize + 1);
-					var ycord = this.baseOffset + column * (this.cellsize + 1);
+					var xcord = this.baseOffset + row * (this.cellsize + 2);
+					var ycord = this.baseOffset + column * (this.cellsize + 2);
 					var fieldId = this.field(xcord, ycord, row, column, r);
 					this.fieldList[row * this.size + column] = fieldId;
 				}
