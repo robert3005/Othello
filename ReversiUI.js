@@ -25,10 +25,11 @@ window.onload = function () {
 				var colour = this.Game.grid.getFieldAt(row, column).color;
 				var defined = colour === MY.colorsEnum.empty ? false : true;
 				colour = colour === MY.colorsEnum.white ? this.whites : this.blacks;
+				var backgroundColour = ((row * this.size +  column) % 2) === row % 2 ? '#78D492' : '#2A6F75';
 
 				var fieldBackground = r.rect(xcord, ycord, this.cellsize, this.cellsize).attr({
-					fill: this.boardColor,
-					stroke: this.cellBorderColor
+					fill: backgroundColour,
+					stroke: '#A5C77F'
 				});
 
 				var token = r.circle(xcord + this.cellsize / 2, ycord + this.cellsize / 2, 20).attr({
@@ -109,7 +110,6 @@ window.onload = function () {
 						var screenEdge = player === 0 ? 40 : this.gridsize - 40;
 						var fontSize = 32 - index * 3
 						var position = 150 + (index + 1) * 25
-						console.log(fontSize, position);
 						if (scoresDisplay[index] !== undefined) {
 							scoresDisplay[index].attr({
 								text: this.scores[index][player]
