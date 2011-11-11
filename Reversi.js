@@ -17,7 +17,8 @@ var Dictionary = function (startValues) {
         };
 
         this.forEachIn = function (object, action) {
-            for (var property in object) {
+            var property;
+            for (property in object) {
                 if (Object.prototype.hasOwnProperty.call(object, property)) {
                     action(property, object[property]);
                 }
@@ -29,14 +30,14 @@ var Dictionary = function (startValues) {
         };
 
         this.isEmpty = function () {
-            for (var prop in this.values) {
-                if (this.values.hasOwnProperty(prop)) {
+            var property;
+            for (property in this.values) {
+                if (this.values.hasOwnProperty(property)) {
                     return false;
-
-               }
+                }
             }
             return true;
-        }
+        };
     };
 
 ///////////////////////////////////////////////////////////
@@ -58,37 +59,50 @@ var Field = function (color) {
 // Grid's functions //
 var Grid = function (size) {
         "use strict";
-        this.size = size;
-        this.cells = [];
+        var instance;
+        Grid = function Grid() {
+            return instance;
+        };
+        Grid.prototype = this;
+        instance = new Grid();
+        instance.constructor = Grid;
 
-        this.populate = function () {
-            for (var y = 0; y < this.size; ++y) {
-                for (var x = 0; x < this.size; ++x) {
-                    this.setFieldAt(x, y, new Field(MY.colorsEnum.empty));
+        instance.size = size;
+        instance.cells = [];
+
+        instance.populate = function () {
+            var y, x;
+            for (y = 0; y < instance.size; ++y) {
+                for (x = 0; x < instance.size; ++x) {
+                    instance.setFieldAt(x, y, new Field(MY.colorsEnum.empty));
                 }
             }
         };
 
-        this.getFieldAt = function (x, y) {
-            return this.cells[y * this.size + x];
+        instance.getFieldAt = function (x, y) {
+            return instance.cells[y * instance.size + x];
         };
 
-        this.setFieldAt = function (x, y, field) {
-            this.cells[y * this.size + x] = field;
+        instance.setFieldAt = function (x, y, field) {
+            instance.cells[y * instance.size + x] = field;
         };
 
-        this.each = function (action) {
-            for (var y = 0; y < this.size; ++y) {
-                for (var x = 0; x < this.size; ++x) {
+        instance.each = function (action) {
+            var y, x;
+            for (y = 0; y < instance.size; ++y) {
+                for (x = 0; x < instance.size; ++x) {
                     action(x, y);
                 }
             }
         };
 
-        this.addTo = function (state, value) {
+        instance.addTo = function (state, value) {
             return [state[0] + value[0], state[1] + value[1]];
         };
+
+        return instance;
     };
+
 
 ///////////////////////////////////////////////////////////
 // Player's functions //
@@ -113,7 +127,7 @@ var Game = function (size) {
 
         this.initialise = function () {
             this.grid.populate();
-            var middleField = parseInt(this.grid.size / 2);
+            var middleField = parseInt(this.grid.size / 2, 10);
             this.grid.getFieldAt(middleField - 1, middleField - 1).color = MY.colorsEnum.white;
             this.grid.getFieldAt(middleField, middleField).color = MY.colorsEnum.white;
             this.grid.getFieldAt(middleField, middleField - 1).color = MY.colorsEnum.black;
@@ -190,11 +204,11 @@ var Game = function (size) {
 
         this.updateGrid = function (x, y) {
             var tilesToChange = this.currentPlayer.legalMoves.lookup([x, y]),
-                fieldToChange, scoreDiff = tilesToChange.length;
+                scoreDiff = tilesToChange.length;
             this.currentPlayer.score += (scoreDiff + 1);
             this.otherPlayer.score -= scoreDiff;
             this.grid.getFieldAt(x, y).color = this.currentPlayer.color;
-            tilesToChange.forEach(function(field, index, array) {
+            tilesToChange.forEach(function (field, index, array) {
                 this.grid.getFieldAt(field[0], field[1]).color = this.currentPlayer.color;
             }, this);
         };
@@ -210,4 +224,3 @@ var Game = function (size) {
             "nw": [-1, -1]
         });
     };
-     
