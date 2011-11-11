@@ -224,11 +224,11 @@ window.onload = function () {
                     fill: this.blacks
                 }).click((function(obj) {
                     return function() {
-                        var newSize = parseInt(prompt("Please provide the new size of the board","8"));
+                        var newSize = parseInt(prompt("Please provide the new size of the board","8"),10);
                         obj.size = isNaN(newSize) ? 8 : newSize;
                         obj.gridsize = obj.size * obj.cellsize + 2 * obj.baseOffset;
                         (obj.redraw(obj))();
-                    }
+                    };
                 })(this)).hover(shiftColours(this.boardColorDark), shiftColours(this.blacks));
 
                 var newGame = this.drawable.text(80, this.gridsize - this.baseOffset, "Restart").attr({
