@@ -75,6 +75,7 @@ window.onload = function () {
             this.initialise = function () {
                 this.Game = new Game(this.size);
                 this.Game.initialise();
+                this.header = 0;
                 this.scores = [];
                 this.scoreBoard = [
                     [],
@@ -216,6 +217,7 @@ window.onload = function () {
                         var _div = document.createElement('div');
                         _div.setAttribute("id", "othello");
                         _body.appendChild(_div);
+                        this.drawable = new Raphael("othello", obj.gridsize, obj.gridsize);
                         obj.initialise();
                         obj.drawBoard();
                     };
