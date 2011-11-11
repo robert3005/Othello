@@ -59,18 +59,10 @@ var Field = function (color) {
 // Grid's functions //
 var Grid = function (size) {
         "use strict";
-        var instance;
-        Grid = function Grid() {
-            return instance;
-        };
-        Grid.prototype = this;
-        instance = new Grid();
-        instance.constructor = Grid;
+        this.size = size;
+        this.cells = [];
 
-        instance.size = size;
-        instance.cells = [];
-
-        instance.populate = function () {
+        this.populate = function () {
             var y, x;
             for (y = 0; y < instance.size; ++y) {
                 for (x = 0; x < instance.size; ++x) {
@@ -79,15 +71,15 @@ var Grid = function (size) {
             }
         };
 
-        instance.getFieldAt = function (x, y) {
+        this.getFieldAt = function (x, y) {
             return instance.cells[y * instance.size + x];
         };
 
-        instance.setFieldAt = function (x, y, field) {
+        this.setFieldAt = function (x, y, field) {
             instance.cells[y * instance.size + x] = field;
         };
 
-        instance.each = function (action) {
+        this.each = function (action) {
             var y, x;
             for (y = 0; y < instance.size; ++y) {
                 for (x = 0; x < instance.size; ++x) {
@@ -96,11 +88,9 @@ var Grid = function (size) {
             }
         };
 
-        instance.addTo = function (state, value) {
+        this.addTo = function (state, value) {
             return [state[0] + value[0], state[1] + value[1]];
         };
-
-        return instance;
     };
 
 
