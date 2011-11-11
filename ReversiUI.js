@@ -1,13 +1,13 @@
 window.onload = function () {
     "use strict";
-    var ReversiUI = function () {
+    var ReversiUI = function (size) {
             this.boardColorLight = "#B2CBD9";
             this.boardColorDark = "#7F8E98";
             this.boardBorderColor = "#EFDAAD";
             this.whites = "#E5EEF5";
             this.blacks = "#4F443A";
             this.tokenBorder = "#000";
-            this.size = 8;
+            this.size = size;
             this.cellsize = 64;
             this.baseOffset = 100;
             this.gridsize = this.size * this.cellsize + 2 * this.baseOffset;
@@ -181,6 +181,20 @@ window.onload = function () {
                 return color === Reversi.colorsEnum.white ? "Whites" : "Blacks";
             };
 
+           this.redraw = function(obj) {
+                return function () {
+                    var othello = document.getElementById("othello");
+                    othello.parentNode.removeChild(othello);
+                    var _body = document.getElementsByTagName('body')[0];
+                    var _div = document.createElement('div');
+                    _div.setAttribute("id", "othello");
+                    _body.appendChild(_div);
+                    obj.drawable = new Raphael("othello", obj.gridsize, obj.gridsize);
+                    obj.initialise();
+                    obj.drawBoard();
+                };
+            };
+
             this.drawBoard = function () {
                 var _canvas = document.getElementById("othello");
                 _canvas.style.width = this.gridsize + "px";
@@ -198,7 +212,6 @@ window.onload = function () {
                     font: "bold 16px Verdana",
                     fill: this.blacks
                 });
-
                 var shiftColours = function (colour) {
                         return function () {
                             this.animate({
@@ -206,22 +219,22 @@ window.onload = function () {
                             }, 200, "backOut");
                         };
                     };
+                var changeSize = this.drawable.text(80, this.gridsize - this.baseOffset - 50, "Change Size").attr({
+                    font: "bold 20px Verdana",
+                    fill: this.blacks
+                }).click((function(obj) {
+                    return function() {
+                        var newSize = parseInt(prompt("Please provide the new size of the board","8"));
+                        obj.size = isNaN(newSize) ? 8 : newSize;
+                        obj.gridsize = obj.size * obj.cellsize + 2 * obj.baseOffset;
+                        (obj.redraw(obj))();
+                    }
+                })(this)).hover(shiftColours(this.boardColorDark), shiftColours(this.blacks));
+
                 var newGame = this.drawable.text(80, this.gridsize - this.baseOffset, "Restart").attr({
                     font: "bold 32px Verdana",
                     fill: this.blacks
-                }).click((function (obj) {
-                    return function () {
-                        var othello = document.getElementById("othello");
-                        othello.parentNode.removeChild(othello);
-                        var _body = document.getElementsByTagName('body')[0];
-                        var _div = document.createElement('div');
-                        _div.setAttribute("id", "othello");
-                        _body.appendChild(_div);
-                        obj.drawable = new Raphael("othello", obj.gridsize, obj.gridsize);
-                        obj.initialise();
-                        obj.drawBoard();
-                    };
-                })(this)).hover(shiftColours(this.boardColorDark), shiftColours(this.blacks));
+                }).click(this.redraw(this)).hover(shiftColours(this.boardColorDark), shiftColours(this.blacks));
 
                 var topSeparatorOffset = this.baseOffset - 8;
                 var topSeparatorPath = "M0 " + topSeparatorOffset + " L" + this.gridsize + " " + topSeparatorOffset;
@@ -244,7 +257,7 @@ window.onload = function () {
             };
         };
 
-    var UI = new ReversiUI();
-    UI.initialise();
+    var UI = new ReversiUI(8);
+    UI.Game.initialise();
     UI.drawBoard();
 };
