@@ -50,9 +50,9 @@ MY.colorsEnum = {
 };
 Object.freeze(MY.colorsEnum);
 
-var Field = function (color) {
+var Field = function (colour) {
         "use strict";
-        this.color = color;
+        this.colour = colour;
     };
 
 ///////////////////////////////////////////////////////////
