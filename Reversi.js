@@ -153,19 +153,19 @@ var Game = function (size) {
             var legalMoves = new Dictionary(),
                 tilesToChange = [],
                 tempTiles = [],
-                localColor, state = [],
+                localColor,
+                state = [],
                 that = this,
-                outOfBounds = false;
-
-            var advance = function (value) {
-                state = that.grid.addTo(state, value);
-                if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
-                    outOfBounds = true;
-                } else {
-                    outOfBounds = false;
-                    localColor = that.grid.getFieldAt(state[0], state[1]).color;
-                }
-            };
+                outOfBounds = false,
+                advance = function (value) {
+                    state = that.grid.addTo(state, value);
+                    if (state[0] >= that.grid.size || state[1] >= that.grid.size || state[0] < 0 || state[1] < 0) {
+                        outOfBounds = true;
+                    } else {
+                        outOfBounds = false;
+                        localColor = that.grid.getFieldAt(state[0], state[1]).color;
+                    }
+                };
 
             this.grid.each(function (x, y) {
                 state = [x, y];
