@@ -21,8 +21,8 @@ window.onload = function () {
 			this.field = function (xcord, ycord, column, row) {
 				var that = this;
 				var colour = this.Game.grid.getFieldAt(row, column).color;
-				var defined = colour === MY.colorsEnum.empty ? false : true;
-				colour = colour === MY.colorsEnum.white ? this.whites : this.blacks;
+				var defined = colour === Reversi.colorsEnum.empty ? false : true;
+				colour = colour === Reversi.colorsEnum.white ? this.whites : this.blacks;
 				var backgroundColour = ((row * this.size +  column) % 2) === (row % 2) ? this.boardColorLight  : this.boardColorDark;
 
 				var fieldBackground = this.drawable.rect(xcord, ycord, this.cellsize, this.cellsize).attr({
@@ -69,7 +69,7 @@ window.onload = function () {
 			};
 
 			this.initialise = function () {
-				this.Game = new Game(this.size);
+				this.Game = new Reversi.Game(this.size);
 				this.Game.initialise();
 							this.scores = [];
 			this.scoreBoard = [
@@ -161,7 +161,7 @@ window.onload = function () {
 						winnerScore = player.score;
 						winner = player;
 					} else if(player.score === winnerScore) {
-						winner = MY.colorsEnum.empty;
+						winner = Reversi.colorsEnum.empty;
 					}
 				});
 				this.drawable.text(this.gridsize / 2, this.gridsize - 40).attr({
@@ -173,11 +173,11 @@ window.onload = function () {
 			};
 
 			this.translateColor = function (colorEnum) {
-				return colorEnum === MY.colorsEnum.white ? this.whites : this.blacks;
+				return colorEnum === Reversi.colorsEnum.white ? this.whites : this.blacks;
 			};
 
 			this.getCurrentPlayer = function (color) {
-				return color === MY.colorsEnum.white ? "Whites" :  color === MY.colorsEnum.black ? "Blacks" : "Draw";
+				return color === Reversi.colorsEnum.white ? "Whites" :  color === Reversi.colorsEnum.black ? "Blacks" : "Draw";
 			};
 
 			this.drawBoard = function () {
