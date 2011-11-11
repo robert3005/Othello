@@ -50,9 +50,9 @@ Reversi.colorsEnum = {
 };
 Object.freeze(Reversi.colorsEnum);
 
-Reversi.Field = function (color) {
-    "use strict";
-    this.color = color;
+Reversi.Field = function (colour) {
+        "use strict";
+        this.colour = colour;
 };
 
 ///////////////////////////////////////////////////////////
