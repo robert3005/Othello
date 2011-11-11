@@ -64,25 +64,25 @@ var Grid = function (size) {
 
         this.populate = function () {
             var y, x;
-            for (y = 0; y < instance.size; ++y) {
-                for (x = 0; x < instance.size; ++x) {
-                    instance.setFieldAt(x, y, new Field(MY.colorsEnum.empty));
+            for (y = 0; y < this.size; ++y) {
+                for (x = 0; x < this.size; ++x) {
+                    this.setFieldAt(x, y, new Field(MY.colorsEnum.empty));
                 }
             }
         };
 
         this.getFieldAt = function (x, y) {
-            return instance.cells[y * instance.size + x];
+            return this.cells[y * this.size + x];
         };
 
         this.setFieldAt = function (x, y, field) {
-            instance.cells[y * instance.size + x] = field;
+            this.cells[y * this.size + x] = field;
         };
 
         this.each = function (action) {
             var y, x;
-            for (y = 0; y < instance.size; ++y) {
-                for (x = 0; x < instance.size; ++x) {
+            for (y = 0; y < this.size; ++y) {
+                for (x = 0; x < this.size; ++x) {
                     action(x, y);
                 }
             }
