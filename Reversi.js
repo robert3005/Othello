@@ -1,5 +1,3 @@
-// One Global // dunno about it // 
-var MY = {};
 ///////////////////////////////////////////////////////////
 // Dictionary //
 var Dictionary = function (startValues) {
@@ -43,6 +41,7 @@ var Dictionary = function (startValues) {
 
 ///////////////////////////////////////////////////////////
 // Field's functions //
+var MY = {};
 MY.colorsEnum = {
     white: 0,
     black: 1,
@@ -210,4 +209,5 @@ var Game = function (size) {
             "w": [-1, 0],
             "nw": [-1, -1]
         });
-    };   
+    };
+     
