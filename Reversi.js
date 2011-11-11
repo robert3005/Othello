@@ -96,10 +96,10 @@ Reversi.Grid = function (size) {
 
 ///////////////////////////////////////////////////////////
 // Player's functions //
-Reversi.Player = function (id, color) {
+Reversi.Player = function (id, colour) {
     "use strict";
     this.id = id;
-    this.color = color;
+    this.colour = colour;
     this.score = 2;
     this.legalMoves = new Reversi.Dictionary();
 };
@@ -118,10 +118,10 @@ Reversi.Game = function (size) {
     this.initialise = function () {
         this.grid.populate();
         var middleField = parseInt(this.grid.size / 2, 10);
-        this.grid.getFieldAt(middleField - 1, middleField - 1).color = Reversi.colorsEnum.white;
-        this.grid.getFieldAt(middleField, middleField).color = Reversi.colorsEnum.white;
-        this.grid.getFieldAt(middleField, middleField - 1).color = Reversi.colorsEnum.black;
-        this.grid.getFieldAt(middleField - 1, middleField).color = Reversi.colorsEnum.black;
+        this.grid.getFieldAt(middleField - 1, middleField - 1).colour = Reversi.colorsEnum.white;
+        this.grid.getFieldAt(middleField, middleField).colour = Reversi.colorsEnum.white;
+        this.grid.getFieldAt(middleField, middleField - 1).colour = Reversi.colorsEnum.black;
+        this.grid.getFieldAt(middleField - 1, middleField).colour = Reversi.colorsEnum.black;
 
         this.players.push(new Reversi.Player(1, Reversi.colorsEnum.white));
         this.players.push(new Reversi.Player(2, Reversi.colorsEnum.black));
@@ -162,16 +162,16 @@ Reversi.Game = function (size) {
                     outOfBounds = true;
                 } else {
                     outOfBounds = false;
-                    localColor = that.grid.getFieldAt(state[0], state[1]).color;
+                    localColor = that.grid.getFieldAt(state[0], state[1]).colour;
                 }
             };
 
         this.grid.each(function (x, y) {
             state = [x, y];
-            if (that.grid.getFieldAt(x, y).color === Reversi.colorsEnum.empty) {
+            if (that.grid.getFieldAt(x, y).colour === Reversi.colorsEnum.empty) {
                 that.directions.each(function (direction, value) {
                     advance(value);
-                    while (!outOfBounds && localColor === that.otherPlayer.color) {
+                    while (!outOfBounds && localColor === that.otherPlayer.colour) {
                         tempTiles.push(state);
                         advance(value);
                     }
@@ -196,9 +196,9 @@ Reversi.Game = function (size) {
             scoreDiff = tilesToChange.length;
         this.currentPlayer.score += (scoreDiff + 1);
         this.otherPlayer.score -= scoreDiff;
-        this.grid.getFieldAt(x, y).color = this.currentPlayer.color;
+        this.grid.getFieldAt(x, y).colour = this.currentPlayer.colour;
         tilesToChange.forEach(function (field, index, array) {
-            this.grid.getFieldAt(field[0], field[1]).color = this.currentPlayer.color;
+            this.grid.getFieldAt(field[0], field[1]).colour = this.currentPlayer.colour;
         }, this);
     };
 

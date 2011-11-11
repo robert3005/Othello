@@ -23,7 +23,7 @@ window.onload = function () {
 
             this.field = function (xcord, ycord, column, row) {
                 var that = this;
-                var colour = this.Game.grid.getFieldAt(row, column).color;
+                var colour = this.Game.grid.getFieldAt(row, column).colour;
                 var defined = colour === Reversi.colorsEnum.empty ? false : true;
                 colour = colour === Reversi.colorsEnum.white ? this.whites : this.blacks;
                 var backgroundColour = ((row * this.size + column) % 2) === (row % 2) ? this.boardColorLight : this.boardColorDark;
@@ -43,7 +43,7 @@ window.onload = function () {
                         return function () {
                             if (this.Game.currentPlayer.legalMoves.lookup([row, column]) !== undefined) {
                                 token.attr({
-                                    fill: this.translateColorEnum(this.Game.currentPlayer.color)
+                                    fill: this.translateColorEnum(this.Game.currentPlayer.colour)
                                 });
                                 if (!token.data("defined")) {
                                     token.animate({
@@ -96,7 +96,7 @@ window.onload = function () {
 
                 tilesDrawables.animate({
                     opacity: 1,
-                    fill: this.translateColorEnum(this.Game.currentPlayer.color)
+                    fill: this.translateColorEnum(this.Game.currentPlayer.colour)
                 }, 300, "backOut");
 
                 this.Game.changePlayer();
@@ -116,13 +116,13 @@ window.onload = function () {
             this.updateCurrentPlayer = function () {
                 if (this.header !== 0) {
                     this.drawable.getById(this.header).attr({
-                        text: this.getCurrentPlayer(this.Game.currentPlayer.color) + " Turn"
+                        text: this.getCurrentPlayer(this.Game.currentPlayer.colour) + " Turn"
                     });
                 } else {
                     var header = this.drawable.text(this.gridsize / 2, 50).attr({
                         font: "bold 40px Verdana",
                         fill: this.blacks,
-                        text: this.getCurrentPlayer(this.Game.currentPlayer.color) + " Turn"
+                        text: this.getCurrentPlayer(this.Game.currentPlayer.colour) + " Turn"
                     });
                     this.header = header.id;
                 }
@@ -160,7 +160,7 @@ window.onload = function () {
                 this.Game.players.forEach(function (player, index, array) {
                     if (player.score > winnerScore) {
                         winnerScore = player.score;
-                        winner = player.color;
+                        winner = player.colour;
                     } else if (player.score === winnerScore) {
                         winner = Reversi.colorsEnum.empty;
                     }
