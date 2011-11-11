@@ -23,7 +23,7 @@ window.onload = function () {
 
             this.field = function (xcord, ycord, column, row) {
                 var that = this;
-                var colour = this.Game.grid.getFieldAt(row, column).colour;
+                var colour = this.Game.grid.getFieldAt(row, column);
                 var defined = colour === Reversi.colorsEnum.empty ? false : true;
                 colour = colour === Reversi.colorsEnum.white ? this.whites : this.blacks;
                 var backgroundColour = ((row * this.size + column) % 2) === (row % 2) ? this.boardColorLight : this.boardColorDark;

@@ -50,11 +50,6 @@ Reversi.colorsEnum = {
 };
 Object.freeze(Reversi.colorsEnum);
 
-Reversi.Field = function (colour) {
-        "use strict";
-        this.colour = colour;
-};
-
 ///////////////////////////////////////////////////////////
 // Grid's functions //
 Reversi.Grid = function (size) {
@@ -66,7 +61,7 @@ Reversi.Grid = function (size) {
         var y, x;
         for (y = 0; y < this.size; ++y) {
             for (x = 0; x < this.size; ++x) {
-                this.setFieldAt(x, y, new Reversi.Field(Reversi.colorsEnum.empty));
+                this.setFieldAt(x, y, Reversi.colorsEnum.empty);
             }
         }
     };
@@ -75,8 +70,8 @@ Reversi.Grid = function (size) {
         return this.cells[y * this.size + x];
     };
 
-    this.setFieldAt = function (x, y, field) {
-        this.cells[y * this.size + x] = field;
+    this.setFieldAt = function (x, y, colour) {
+        this.cells[y * this.size + x] = colour;
     };
 
     this.each = function (action) {
@@ -118,10 +113,10 @@ Reversi.Game = function (size) {
     this.initialise = function () {
         this.grid.populate();
         var middleField = parseInt(this.grid.size / 2, 10);
-        this.grid.getFieldAt(middleField - 1, middleField - 1).colour = Reversi.colorsEnum.white;
-        this.grid.getFieldAt(middleField, middleField).colour = Reversi.colorsEnum.white;
-        this.grid.getFieldAt(middleField, middleField - 1).colour = Reversi.colorsEnum.black;
-        this.grid.getFieldAt(middleField - 1, middleField).colour = Reversi.colorsEnum.black;
+        this.grid.setFieldAt(middleField - 1, middleField - 1, Reversi.colorsEnum.white);
+        this.grid.setFieldAt(middleField, middleField, Reversi.colorsEnum.white);
+        this.grid.setFieldAt(middleField, middleField - 1, Reversi.colorsEnum.black);
+        this.grid.setFieldAt(middleField - 1, middleField, Reversi.colorsEnum.black);
 
         this.players.push(new Reversi.Player(1, Reversi.colorsEnum.white));
         this.players.push(new Reversi.Player(2, Reversi.colorsEnum.black));
@@ -162,13 +157,13 @@ Reversi.Game = function (size) {
                     outOfBounds = true;
                 } else {
                     outOfBounds = false;
-                    localColor = that.grid.getFieldAt(state[0], state[1]).colour;
+                    localColor = that.grid.getFieldAt(state[0], state[1]);
                 }
             };
 
         this.grid.each(function (x, y) {
             state = [x, y];
-            if (that.grid.getFieldAt(x, y).colour === Reversi.colorsEnum.empty) {
+            if (that.grid.getFieldAt(x, y) === Reversi.colorsEnum.empty) {
                 that.directions.each(function (direction, value) {
                     advance(value);
                     while (!outOfBounds && localColor === that.otherPlayer.colour) {
@@ -196,9 +191,9 @@ Reversi.Game = function (size) {
             scoreDiff = tilesToChange.length;
         this.currentPlayer.score += (scoreDiff + 1);
         this.otherPlayer.score -= scoreDiff;
-        this.grid.getFieldAt(x, y).colour = this.currentPlayer.colour;
+        this.grid.setFieldAt(x, y, this.currentPlayer.colour);
         tilesToChange.forEach(function (field, index, array) {
-            this.grid.getFieldAt(field[0], field[1]).colour = this.currentPlayer.colour;
+            this.grid.setFieldAt(field[0], field[1], this.currentPlayer.colour);
         }, this);
     };
 
