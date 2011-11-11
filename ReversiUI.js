@@ -48,7 +48,7 @@ window.onload = function () {
                                 if (!token.data("defined")) {
                                     token.animate({
                                         opacity: op
-                                    }, 200, "backOut");
+                                    }, 300, "backOut");
                                 }
                             }
                         };
@@ -97,7 +97,7 @@ window.onload = function () {
                 tilesDrawables.animate({
                     opacity: 1,
                     fill: this.translateColorEnum(this.Game.currentPlayer.colour)
-                }, 300, "backOut");
+                }, 500, "backOut");
 
                 this.Game.changePlayer();
                 this.updateScores();
